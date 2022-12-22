@@ -27,6 +27,8 @@ def touch(path: str):
 
 
 def remove(path: str):
+    if not path:
+        return None
     if is_dir(path):
         shutil.rmtree(path)
     else:
