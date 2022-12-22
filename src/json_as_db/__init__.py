@@ -1,5 +1,5 @@
-from Client import Client
-from Table import Table
+from .Client import Client
+from .Table import Table
 
 __version__ = "0.1.0"
 
