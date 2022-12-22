@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "json_db"
+version = "0.0.1"
+description = "Using JSON as very lightweight database"
+readme = "README.md"
+license = "MIT"
+keywords = ["json", "lightweight", "database"]
+authors = [
+  "Joonas <joonas.yoon@gmail.com>"
+]
+maintainers = [
+  "Joonas <joonas.yoon@gmail.com>"
+]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Database",
+  "Topic :: System :: Filesystems"
+]
+packages = [
+    { include = "json_db", from = "src" },
+]
+exclude = [
+  "examples*",
+  "scripts*",
+  "docs*",
+  "tests*"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+
+[tool.poetry.dev-dependencies]
+pytest = ">=5.0.0"
+
+[tool.poetry.urls]
+homepage = "http://joonas.io/json-db"
+documentation = "http://joonas.io/json-db"
+repository = "https://github.com/joonas-yoon/json-db"
+changelog = "https://github.com/joonas-yoon/json-db/blob/master/CHANGELOG.md"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
