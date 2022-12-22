@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "json_db"
-version = "0.0.1"
+name = "json_as_db"
+version = "0.0.1b"
 description = "Using JSON as very lightweight database"
 readme = "README.md"
 license = "MIT"
@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: System :: Filesystems"
 ]
 packages = [
-    { include = "json_db", from = "src" },
+    { include = "json_as_db", from = "src" },
 ]
 exclude = [
   "examples*",
