@@ -8,9 +8,9 @@ __all__ = ['Database']
 class Database(dict):
     __path__: str
     __name__: str
-    __columns__ = [
+    __records__ = 'records'
+    __metadata__ = [
         'version',
-        'records',
         'creator',
         'created_at',
         'updated_at',
@@ -51,12 +51,12 @@ class Database(dict):
 
     @property
     def records(self):
-        return self.__dict__.get('records') or dict()
+        return self.__dict__.get(self.__records__) or dict()
 
     @property
     def metadata(self) -> dict:
         meta = dict()
-        for column in self.__columns__:
+        for column in self.__metadata__:
             meta[column] = self.__dict__.get(column)
         return meta
 
