@@ -32,11 +32,11 @@ class Client:
         return (file_name, file_path)
 
 
-    def _wrapping_database(self, _dict: dict, name: str) -> Database:
+    def _wrapping_database(self, _dict: dict, file_name: str) -> Database:
         database = Database(_dict)
-        path, name = self._get_database_path(name)
-        database.__path__ = path
-        database.__name__ = name
+        file_name, file_path = self._get_database_path(file_name)
+        database.__path__ = file_path
+        database.__name__ = file_name
         return database
 
 
