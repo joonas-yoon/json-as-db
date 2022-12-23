@@ -17,21 +17,21 @@ _defaults_save_json_kwargs = dict(
 )
 
 
-def from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
+def _from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
     return_type = type(value)
     if not isinstance(value, list):
         value = [value]
     return (return_type, value)
 
 
-def return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
+def _return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
     if _type is list:
         return _values
     else:
         return _values[0]
 
 
-def override_only_unset(__dict: dict, __target: dict):
+def _override_only_unset(__dict: dict, __target: dict):
     unset_fields = set(__target.keys()) - set(__dict.keys())
     new_target = dict()
     for field in unset_fields:
@@ -62,7 +62,7 @@ class Database(dict):
             'updated_at': now,
             self.__records__: dict(),
         }
-        self.__dict__ = override_only_unset(self.__dict__, defaults)
+        self.__dict__ = _override_only_unset(self.__dict__, defaults)
 
     def __getitem__(self, key: str) -> Any:
         try:
@@ -110,9 +110,9 @@ class Database(dict):
         return meta
 
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
-        _type, _keys = from_maybe_list(key)
+        _type, _keys = _from_maybe_list(key)
         values = [self.records.get(k, default) for k in _keys]
-        return return_maybe(_type, values)
+        return _return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
         return self.records.update(mapping, **kwargs)
@@ -122,8 +122,8 @@ class Database(dict):
         id: Union[str, List[str]],
         value: Union[Any, List[Any]]
     ) -> None:
-        type_id, ids = from_maybe_list(id)
-        type_value, values = from_maybe_list(value)
+        type_id, ids = _from_maybe_list(id)
+        type_value, values = _from_maybe_list(value)
         if len(ids) != len(values):
             raise ValueError('Can not match ids and values. please check type and length of them')
         for index in range(len(ids)):
@@ -134,7 +134,7 @@ class Database(dict):
             self.records.update(target)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
-        _type, _items = from_maybe_list(item)
+        _type, _items = _from_maybe_list(item)
 
         ids = []
         for i in _items:
@@ -142,12 +142,12 @@ class Database(dict):
             self.records[uid] = i
             ids.append(uid)
 
-        return return_maybe(_type, ids)
+        return _return_maybe(_type, ids)
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
-        _type, _keys = from_maybe_list(key)
+        _type, _keys = _from_maybe_list(key)
         popped = [self.records.pop(key) for key in _keys]
-        return return_maybe(_type, popped)
+        return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
         return self.records.values()
@@ -163,10 +163,10 @@ class Database(dict):
         return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
-        _type, _keys = from_maybe_list(key)
+        _type, _keys = _from_maybe_list(key)
         key_set = set(self.records.keys())
         values = [k in key_set for k in _keys]
-        return return_maybe(_type, values)
+        return _return_maybe(_type, values)
 
     def count(self) -> int:
         """
@@ -213,8 +213,8 @@ class Database(dict):
                 keyword arguments for `json.dumps(**kwargs)`.
                 Defaults to `(sort_keys=True)`.
         """
-        file_kwds = override_only_unset(file_kwds, _defaults_save_file_kwargs)
-        json_kwds = override_only_unset(json_kwds, _defaults_save_json_kwargs)
+        file_kwds = _override_only_unset(file_kwds, _defaults_save_file_kwargs)
+        json_kwds = _override_only_unset(json_kwds, _defaults_save_json_kwargs)
 
         async with aiofiles.open(self.filepath, **file_kwds) as f:
             dict_out = dict(self.__dict__)
