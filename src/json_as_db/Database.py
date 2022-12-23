@@ -2,9 +2,19 @@ import json
 import shortuuid
 import aiofiles
 
+from datetime import datetime
 from typing import Any, Union, List, Callable, Tuple
+from .constants import package_name
 
 __all__ = ['Database']
+
+_defaults_save_file_kwargs = dict(
+    mode = "w",
+    encoding = "utf-8",
+)
+_defaults_save_json_kwargs = dict(
+    sort_keys = True,
+)
 
 
 def from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
@@ -21,10 +31,20 @@ def return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
         return _values[0]
 
 
+def override_only_unset(__dict: dict, __target: dict):
+    unset_fields = set(__target.keys()) - set(__dict.keys())
+    new_target = dict()
+    for field in unset_fields:
+        new_target[field] = __target[field]
+    __dict.update(new_target)
+    return __dict
+
+
 class Database(dict):
     __path__: str
     __name__: str
     __records__ = 'records'
+    __version__ = '1.0.0'
     __metadata__ = [
         'version',
         'creator',
@@ -34,6 +54,15 @@ class Database(dict):
 
     def __init__(self, *arg, **kwargs):
         self.__dict__ = dict(*arg, **kwargs)
+        now = datetime.now().isoformat()
+        defaults = {
+            'version': self.__version__,
+            'creator': package_name,
+            'created_at': now,
+            'updated_at': now,
+            self.__records__: dict(),
+        }
+        self.__dict__ = override_only_unset(self.__dict__, defaults)
 
     def __getitem__(self, key: str) -> Any:
         try:
@@ -67,7 +96,7 @@ class Database(dict):
 
     @property
     def records(self) -> dict:
-        return self.__dict__.get(self.__records__) or dict()
+        return self.__dict__.get(self.__records__)
 
     @property
     def filepath(self) -> str:
@@ -126,8 +155,12 @@ class Database(dict):
     def clear(self) -> None:
         self.records.clear()
 
-    def find(self, func: Callable) -> List[str]:
-        pass
+    def find(self, func: Callable[..., bool]) -> List[str]:
+        ids = []
+        for id, value in self.records.items():
+            if func(value):
+                ids.append(id)
+        return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
         _type, _keys = from_maybe_list(key)
@@ -136,7 +169,7 @@ class Database(dict):
         return return_maybe(_type, values)
 
     def count(self) -> int:
-        """_summary_
+        """
 
         Returns:
             int: indicates the count of all records
@@ -144,7 +177,7 @@ class Database(dict):
         return len(self.records.keys())
 
     def drop(self) -> int:
-        """_summary_
+        """
 
         Returns:
             int: indicates the count of dropped items
@@ -159,7 +192,34 @@ class Database(dict):
     def rollback(self) -> None:
         pass
 
-    async def save(self) -> None:
-        async with aiofiles.open(self.filepath, mode='w') as f:
-            await f.write(json.dumps(self))
+    async def save(
+        self,
+        file_kwds: dict = dict(
+            mode = "w",
+            encoding = "utf-8",
+        ),
+        json_kwds: dict = dict(
+            sort_keys = True,
+        )
+    ) -> None:
+        """
+        Save database into file as JSON format
+
+        Args:
+            file_kwargs (dict, optional):
+                keyword arguments for file `open(**kwagrs)`.
+                Defaults to `(mode="w", encoding="utf-8")`.
+            json_kwargs (dict, optional):
+                keyword arguments for `json.dumps(**kwargs)`.
+                Defaults to `(sort_keys=True)`.
+        """
+        file_kwds = override_only_unset(file_kwds, _defaults_save_file_kwargs)
+        json_kwds = override_only_unset(json_kwds, _defaults_save_json_kwargs)
+
+        async with aiofiles.open(self.filepath, **file_kwds) as f:
+            dict_out = dict(self.__dict__)
+            hidden_keys = list(filter(lambda i: i.startswith('__'), self.__dict__.keys()))
+            for key in hidden_keys:
+                dict_out.pop(key)
+            await f.write(json.dumps(dict_out, **json_kwds))
 

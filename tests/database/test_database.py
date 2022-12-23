@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 
-from json_as_db import Database
+from json_as_db import Client, Database
 from utils import file, logger
 
 
@@ -175,8 +175,17 @@ def test_db_clear(db: Database):
 
 
 def test_db_find(db: Database):
-    db.find(lambda x: True)
-    pytest.skip()
+    result = db.find(lambda x: True)
+    assert len(result) == db.count()
+    found = db.find(lambda x: x['randomInteger'] == 123)
+    assert found == [REC_ID]
+    found = db.find(lambda x: 'alice' in x['list'])
+    assert found == [REC_ID_2]
+    found = db.find(lambda x: False)
+    assert found == []
+    found = db.find(lambda x: x['randomString'].endswith('cat'))
+    assert len(found) == 2
+    assert set(found) == set([REC_ID, REC_ID_2])
 
 
 def test_db_has(db: Database):
@@ -216,7 +225,37 @@ def test_db_rollback(db: Database):
 
 
 @pytest.mark.asyncio
-async def test_db_save(db: Database):
-    """ await db.save() """
-    pytest.skip()
+async def test_db_save():
+    temp_dir = os.path.join(CUR_DIR, 'test_save')
+    try:
+        file.remove(temp_dir)
+    except FileNotFoundError:
+        pass
 
+    samples = [
+        {"id": "ZoomIn", "label": "Zoom In"},
+        {"id": "ZoomOut", "label": "Zoom Out"},
+        {"id": "OriginalView", "label": "Original View"},
+    ]
+
+    client = Client(temp_dir)
+    db = await client.create_database('db')
+    logger.debug(f'[before saving] {db}')
+    db.add(samples)
+    logger.debug(f'[after saving] {db}')
+
+    logger.debug(f'[saving path] {db.filepath}')
+    kwargs = {
+        'file_kwds': {'encoding': 'utf-8'},
+        'json_kwds': {'indent': 4},
+    }
+    await db.save(**kwargs)
+
+    with open(f'{temp_dir}/db.json', 'r', encoding='utf-8') as f:
+        saved = json.load(f)
+        logger.debug(f'[saved] {saved}')
+
+    saved = await client.get_database('db')
+    assert saved == db
+
+    file.remove(temp_dir)
