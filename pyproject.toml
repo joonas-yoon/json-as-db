@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "json_as_db"
-version = "0.0.2b2"
+version = "0.1.0"
 description = "Using JSON as very lightweight database"
 readme = "README.md"
 license = "MIT"
@@ -30,7 +30,7 @@ exclude = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = ">=3.7,<4.0"
 aiofiles = ">=22.1.0"
 
 [tool.poetry.dev-dependencies]
