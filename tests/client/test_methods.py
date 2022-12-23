@@ -1,4 +1,5 @@
 import os
+import json
 import pytest
 
 from json_as_db import Client, Table
@@ -29,13 +30,24 @@ def client() -> Client:
     teardown()
 
 
-class TestClientMethods:
+@pytest.mark.asyncio
+async def test_client_create_empty_table(client: Client):
+    table = await client.create_table('table')
+    assert isinstance(table, dict)
+    path = os.path.join(DB_DIR, 'table.json')
+    logger.debug(path)
+    assert os.path.exists(path)
 
-    @pytest.mark.asyncio
-    async def test_client_create_table(self, client: Client):
-        table = await client.create_table('table')
-        assert isinstance(table, dict)
-        path = os.path.join(DB_DIR, 'table.json')
-        logger.debug(path)
-        assert os.path.exists(path)
+    with open(path, 'r') as f:
+        # should works without error
+        json.load(f)
+
+
+@pytest.mark.asyncio
+async def test_client_create_table(client: Client):
+    table = await client.create_table('table')
+    assert isinstance(table, dict)
+    path = os.path.join(DB_DIR, 'table.json')
+    logger.debug(path)
+    assert os.path.exists(path)
 
