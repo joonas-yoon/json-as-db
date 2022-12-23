@@ -10,13 +10,13 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 DB_DIR = os.path.join(CUR_DIR, file.create_dirpath(prefix='test_methods'))
 
 
-def setup():
+def setup_client():
     logger.debug('setup: '+ DB_DIR)
     file.mkdirs(DB_DIR, exist_ok=True)
     return Client(DB_DIR)
 
 
-def teardown():
+def teardown_client():
     logger.debug('teardown: '+ DB_DIR)
     try:
         file.remove(DB_DIR)
@@ -26,8 +26,8 @@ def teardown():
 
 @pytest.fixture()
 def client() -> Client:
-    yield setup()
-    teardown()
+    yield setup_client()
+    teardown_client()
 
 
 @pytest.mark.asyncio
