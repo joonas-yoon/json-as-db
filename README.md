@@ -1,6 +1,6 @@
 # JSON-as-DB
 
-![Python Version Badge] [![PyTest Badge]](https://github.com/joonas-yoon/json-as-db/actions/workflows/pytest.yml) ![Wheel Badge] [![Hits Badge]](https://hits.seeyoufarm.com&style=flat-square)
+![Python Version Badge] [![PyTest Badge]](https://github.com/joonas-yoon/json-as-db/actions/workflows/pytest.yml) ![Wheel Badge] [![Hits Badge]](#)
 
 Using JSON as very lightweight database
 
