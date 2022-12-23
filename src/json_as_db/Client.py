@@ -1,6 +1,6 @@
 import os
-
-from .Table import Table
+import json
+import aiofiles
 
 
 class Client:
@@ -18,10 +18,22 @@ class Client:
         self.dir_path = os.path.join(dir_path)
         if os.path.exists(self.dir_path):
             if not os.path.isdir(self.dir_path):
-                raise FileExistsError(f"{self.dir_path} is not a directory")
+                raise NotADirectoryError(f"{self.dir_path} is not a directory")
         else:
             os.makedirs(self.dir_path, exist_ok=True)
 
 
-    def create_table(name: str) -> Table:
-        return None
+    async def create_table(self, name: str, ext: str = 'json') -> dict:
+        file_name = name
+        if ext:
+            file_name += f".{ext}"
+        file_path = os.path.join(self.dir_path, file_name)
+
+        if os.path.exists(file_path):
+            raise FileExistsError(f"Failed to create file on {file_path}")
+
+        empty_dict = dict()
+        async with aiofiles.open(file_path, mode='w') as f:
+            await f.write(json.dumps(empty_dict))
+
+        return empty_dict
