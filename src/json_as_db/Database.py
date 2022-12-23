@@ -1,8 +1,24 @@
 import json
-from typing import Any, Union, List, Callable
+import shortuuid
 import aiofiles
 
+from typing import Any, Union, List, Callable, Tuple
+
 __all__ = ['Database']
+
+
+def from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
+    return_type = type(value)
+    if not isinstance(value, list):
+        value = [value]
+    return (return_type, value)
+
+
+def return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
+    if _type is list:
+        return _values
+    else:
+        return _values[0]
 
 
 class Database(dict):
@@ -50,8 +66,12 @@ class Database(dict):
         return self.records.values()
 
     @property
-    def records(self):
+    def records(self) -> dict:
         return self.__dict__.get(self.__records__) or dict()
+
+    @property
+    def filepath(self) -> str:
+        return self.__path__
 
     @property
     def metadata(self) -> dict:
@@ -60,12 +80,10 @@ class Database(dict):
             meta[column] = self.__dict__.get(column)
         return meta
 
-    def get(self, key: Union[str, List[str]], default=None) -> Union[str, List[str]]:
-        if isinstance(key, str):
-            return self.records.get(key, default)
-        if isinstance(key, list):
-            return [self.records.get(k, default) for k in key]
-        raise ValueError("Invalid type of key")
+    def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
+        _type, _keys = from_maybe_list(key)
+        values = [self.records.get(k, default) for k in _keys]
+        return return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
         return self.records.update(mapping, **kwargs)
@@ -74,13 +92,25 @@ class Database(dict):
         pass
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
-        pass
+        _type, _items = from_maybe_list(item)
+
+        ids = []
+        for i in _items:
+            uid = shortuuid.uuid()
+            self.records[uid] = i
+            ids.append(uid)
+
+        return return_maybe(_type, _items)
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
+        # self.records.pop()
         pass
 
     def all(self) -> List[Any]:
         pass
+
+    def clear(self) -> None:
+        self.records.clear()
 
     def find(self, func: Callable) -> List[str]:
         pass
@@ -89,7 +119,12 @@ class Database(dict):
         pass
 
     def count(self) -> int:
-        return 0
+        """_summary_
+
+        Returns:
+            int: indicates the count of all records
+        """
+        return len(self.records.keys())
 
     def drop(self) -> int:
         """_summary_
@@ -97,7 +132,9 @@ class Database(dict):
         Returns:
             int: indicates the count of dropped items
         """
-        return 0
+        del_count = self.count()
+        self.records.clear()
+        return del_count
 
     def commit(self) -> None:
         pass
@@ -106,6 +143,6 @@ class Database(dict):
         pass
 
     async def save(self) -> None:
-        async with aiofiles.open(self.__path__, mode='w') as f:
+        async with aiofiles.open(self.filepath, mode='w') as f:
             await f.write(json.dumps(self))
 

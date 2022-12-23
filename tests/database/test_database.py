@@ -45,7 +45,7 @@ def test_db_add_by_id(db: Database):
     db.add({
 
     })
-    pass
+    pytest.skip()
 
 
 def test_db_add_by_list(db: Database):
@@ -54,34 +54,35 @@ def test_db_add_by_list(db: Database):
     }, {
 
     }])
-    pass
+    pytest.skip()
 
 
 def test_db_remove_by_id(db: Database):
     db.remove(REC_ID)
-    pass
+    pytest.skip()
 
 
 def test_db_remove_by_list(db: Database):
     db.remove([REC_ID])
-    pass
+    pytest.skip()
 
 
 def test_db_get_by_id(db: Database):
-    db.get(REC_ID)
-    pass
+    found = db.get(REC_ID)
+    assert found['randomInteger'] == 123
 
 
 def test_db_get_by_list(db: Database):
-    db.get([REC_ID])
-    pass
+    found = db.get([REC_ID, REC_ID_2])
+    assert found[0]['randomInteger'] == 123
+    assert found[1]['randomInteger'] == 321
 
 
 def test_db_update_by_id(db: Database):
     db.modify(REC_ID, {
 
     })
-    pass
+    pytest.skip()
 
 
 def test_db_update_by_list(db: Database):
@@ -95,51 +96,52 @@ def test_db_update_by_list(db: Database):
         }
     ]
     db.modify(keys, values)
-    pass
+    pytest.skip()
 
 
 def test_db_all(db: Database):
     db.all()
-    pass
+    pytest.skip()
 
 
 def test_db_find_by_function(db: Database):
     db.find(lambda x: True)
-    pass
+    pytest.skip()
 
 
 def test_db_has(db: Database):
     db.has(REC_ID)
-    pass
+    pytest.skip()
 
 
 def test_db_has(db: Database):
-    db.has([REC_ID, REC_ID])
-    pass
+    db.has([REC_ID, REC_ID_2])
+    pytest.skip()
 
 
 def test_db_count(db: Database):
-    db.count()
-    pass
+    assert db.count() == 2
 
 
 def test_db_drop(db: Database):
-    db.drop()
-    pass
+    dropped_count = db.drop()
+    assert dropped_count == 2
+    dropped_count = db.drop()
+    assert dropped_count == 0
 
 
 def test_db_commit(db: Database):
     db.commit()
-    pass
+    pytest.skip()
 
 
 def test_db_rollback(db: Database):
     db.rollback()
-    pass
+    pytest.skip()
 
 
 @pytest.mark.asyncio
 async def test_db_save(db: Database):
     """ await db.save() """
-    pass
+    pytest.skip()
 
