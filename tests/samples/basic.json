@@ -1,0 +1,25 @@
+{
+  "version": "0.0.2b1",
+  "creator": "json-as-db",
+  "records": {
+    "kcbPuqpfV3YSHT8YbECjvh": {
+      "randomInteger": 123,
+      "randomString": "keyboard-cat",
+      "booleanTrue": true,
+      "booleanFalse": false,
+      "empty": null,
+      "list": [
+        "first element"
+      ]
+    },
+    "jmJKBJBAmGESC3rGbSb62T": {
+      "randomInteger": 321,
+      "randomString": "cheshire-cat",
+      "list": [
+        "alice", "in", "wonderland"
+      ]
+    }
+  },
+  "created_at": "2022-12-23T09:17:31.814215",
+  "updated_at": "2022-12-23T15:56:04.586110"
+}

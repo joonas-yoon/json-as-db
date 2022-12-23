@@ -31,10 +31,10 @@ def client() -> Client:
 
 
 @pytest.mark.asyncio
-async def test_client_create_empty_table(client: Client):
-    table = await client.create_table('table')
-    assert isinstance(table, dict)
-    path = os.path.join(DB_DIR, 'table.json')
+async def test_client_create_empty_database(client: Client):
+    database = await client.create_database('database')
+    assert isinstance(database, dict)
+    path = os.path.join(DB_DIR, 'database.json')
     logger.debug(path)
     assert os.path.exists(path)
 
@@ -44,38 +44,45 @@ async def test_client_create_empty_table(client: Client):
 
 
 @pytest.mark.asyncio
-async def test_client_create_table(client: Client):
-    table = await client.create_table('table')
-    assert isinstance(table, dict)
-    path = os.path.join(DB_DIR, 'table.json')
+async def test_client_create_database(client: Client):
+    database = await client.create_database('database')
+    assert isinstance(database, dict)
+    path = os.path.join(DB_DIR, 'database.json')
     logger.debug(path)
     assert os.path.exists(path)
 
 
 @pytest.mark.asyncio
-async def test_client_create_table_conflict(client: Client):
-    path = os.path.join(DB_DIR, 'table.json')
+async def test_client_create_database_conflict(client: Client):
+    path = os.path.join(DB_DIR, 'database.json')
     file.touch(path)
     try:
-        table = await client.create_table('table')
+        database = await client.create_database('database')
     except FileExistsError:
         pass
 
 
 @pytest.mark.asyncio
-async def test_client_get_table(client: Client):
-    path = os.path.join(DB_DIR, 'table.json')
+async def test_client_get_database():
+    SAMPLE_DIR = os.path.join(CUR_DIR, '..', 'samples')
 
-    dummy = dict(a=1, b="str", c=False, d=3.14)
+    client = Client(SAMPLE_DIR)
 
-    with open(path, 'w') as f:
-        json.dump(dummy, f)
+    path = os.path.join(SAMPLE_DIR, 'basic.json')
+
+    expected = {
+      "randomInteger": 321,
+      "randomString": "cheshire-cat",
+      "list": [
+        "alice", "in", "wonderland"
+      ]
+    }
 
     with open(path, 'r') as f:
         answer = json.load(f)
 
-    assert json.dumps(dummy) == json.dumps(answer)
+    assert expected == answer['records']['jmJKBJBAmGESC3rGbSb62T']
 
-    table = await client.get_table('table')
-    assert json.dumps(table) == json.dumps(answer)
+    database = await client.get_database('basic')
+    assert expected == database['jmJKBJBAmGESC3rGbSb62T']
 

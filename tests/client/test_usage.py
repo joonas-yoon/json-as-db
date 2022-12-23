@@ -6,8 +6,8 @@ from json_as_db import Client
 @pytest.mark.asyncio
 async def test_basic_usage():
     client = Client('db')
-    table = await client.create_table('my_table')
-    table.update({
+    database = await client.create_database('my_database')
+    database.update({
       'random-integer': 123,
       'random-string': 'keyboard-cat',
       'boolean-true': True,
@@ -17,5 +17,5 @@ async def test_basic_usage():
           'first element'
       ]
     })
-    await client.get_table('my_table')
-    client.remove_table('my_table')
+    await client.get_database('my_database')
+    client.remove_database('my_database')
