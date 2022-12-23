@@ -18,17 +18,20 @@ def touch(path: str):
         os.utime(path, None)
 
 
-def remove(path: str):
+def remove(path: str, ignore: bool = False):
     if not path:
         return None
-    if is_dir(path):
+    try:
         shutil.rmtree(path)
-    else:
+    except NotADirectoryError:
         os.remove(path)
+    except FileNotFoundError as err:
+        if not ignore:
+            raise err
 
 
-def create_dirpath(depth: int = 1) -> str:
-    prefix = inspect.currentframe().f_back.f_code.co_name
-    path = '/'.join([random_string() for _ in range(depth)])
-    dir = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(dir, f'{prefix}-{path}')
+def create_dirpath(prefix: str = '', depth: int = 1) -> str:
+    paths = ['_' + random_string() for _ in range(depth)]
+    if prefix:
+        paths[0] = f"{prefix}{paths[0]}"
+    return os.path.join(*paths)
