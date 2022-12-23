@@ -9,7 +9,8 @@ from utils import file, logger
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 DB_FILENAME = 'basic.json'
 DB_FILEPATH = os.path.join(CUR_DIR, '..', 'samples', DB_FILENAME)
-SAMPLE_REC_ID = 'kcbPuqpfV3YSHT8YbECjvh'
+REC_ID = 'kcbPuqpfV3YSHT8YbECjvh'
+REC_ID_2 = 'jmJKBJBAmGESC3rGbSb62T'
 
 
 def setup_db() -> Database:
@@ -17,20 +18,11 @@ def setup_db() -> Database:
 
     with open(DB_FILEPATH, 'r') as f:
         data = json.load(f)
-        logger.debug('data: '+ str(data))
 
     db = Database(data)
     db.__path__ = DB_FILEPATH
     db.__name__ = DB_FILENAME
     return db
-
-
-# def teardown():
-#     logger.debug('teardown: (file) '+ DB_FILEPATH)
-#     try:
-#         file.remove(DB_FILEPATH)
-#     except FileNotFoundError:
-#         pass
 
 
 @pytest.fixture()
@@ -39,7 +31,7 @@ def db() -> Database:
 
 
 def test_read_db_attributes(db: Database):
-    record = db.get(SAMPLE_REC_ID)
+    record = db.get(REC_ID)
 
     assert isinstance(record.get('list'), list)
     assert record.get('booleanTrue') == True
@@ -50,72 +42,99 @@ def test_read_db_attributes(db: Database):
 
 
 def test_db_add_by_id(db: Database):
-    """ db.add({...}) """
+    db.add({
+
+    })
     pass
 
 
 def test_db_add_by_list(db: Database):
-    """ db.add([{...}, {...}]) """
+    db.add([{
+
+    }, {
+
+    }])
     pass
 
 
 def test_db_remove_by_id(db: Database):
-    """ db.remove(id) """
+    db.remove(REC_ID)
     pass
 
 
 def test_db_remove_by_list(db: Database):
-    """ db.remove([id]) """
+    db.remove([REC_ID])
     pass
 
 
 def test_db_get_by_id(db: Database):
-    """ db.get(id) """
+    db.get(REC_ID)
     pass
 
 
 def test_db_get_by_list(db: Database):
-    """ db.get([id]) """
+    db.get([REC_ID])
     pass
 
 
 def test_db_update_by_id(db: Database):
-    """ db.update(id, {}) """
+    db.modify(REC_ID, {
+
+    })
     pass
 
 
 def test_db_update_by_list(db: Database):
-    """ db.update([id, id], [{...}, {...}]) """
+    keys = [REC_ID, REC_ID_2]
+    values = [
+        {
+
+        },
+        {
+
+        }
+    ]
+    db.modify(keys, values)
+    pass
+
+
+def test_db_all(db: Database):
+    db.all()
     pass
 
 
 def test_db_find_by_function(db: Database):
-    """ db.find(func) """
+    db.find(lambda x: True)
     pass
 
 
 def test_db_has(db: Database):
-    """ db.has(id) """
+    db.has(REC_ID)
     pass
 
 
-def test_db_has_by_function(db: Database):
-    """ db.has(func) """
+def test_db_has(db: Database):
+    db.has([REC_ID, REC_ID])
+    pass
+
+
+def test_db_count(db: Database):
+    db.count()
     pass
 
 
 def test_db_drop(db: Database):
-    """ db.drop() """
+    db.drop()
     pass
 
 
 def test_db_commit(db: Database):
-    """ db.commit() """
+    db.commit()
     pass
 
 
 def test_db_rollback(db: Database):
-    """ db.rollback() """
+    db.rollback()
     pass
 
 
