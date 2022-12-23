@@ -214,14 +214,24 @@ def test_db_drop(db: Database):
     assert dropped_count == 0
 
 
-def test_db_commit(db: Database):
+def test_db_commit_and_rollback(db: Database):
+    prev = db.all()
+    assert len(prev) == 2
+
     db.commit()
-    pytest.skip()
+    updated_old = db.metadata.get('updated_at')
+    new_item = {'something': 'new'}
+    new_id = db.add(new_item)
+    updated = db.metadata.get('updated_at')
+    assert db.count() == 3
+    assert db.get(new_id) == new_item
+    assert updated_old != updated
 
-
-def test_db_rollback(db: Database):
     db.rollback()
-    pytest.skip()
+    updated_rollback = db.metadata.get('updated_at')
+    assert db.count() == 2
+    assert db.get(new_id) == None
+    assert updated_old == updated_rollback
 
 
 @pytest.mark.asyncio

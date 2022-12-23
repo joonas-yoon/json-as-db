@@ -1,4 +1,5 @@
 import json
+import copy
 import shortuuid
 import aiofiles
 
@@ -36,8 +37,9 @@ def _override_only_unset(__dict: dict, __target: dict):
     new_target = dict()
     for field in unset_fields:
         new_target[field] = __target[field]
-    __dict.update(new_target)
-    return __dict
+    new_dict = copy.deepcopy(__dict)
+    new_dict.update(new_target)
+    return new_dict
 
 
 class Database(dict):
@@ -51,6 +53,7 @@ class Database(dict):
         'created_at',
         'updated_at',
     ]
+    _memory = dict()
 
     def __init__(self, *arg, **kwargs):
         self.__dict__ = dict(*arg, **kwargs)
@@ -63,6 +66,7 @@ class Database(dict):
             self.__records__: dict(),
         }
         self.__dict__ = _override_only_unset(self.__dict__, defaults)
+        self.commit()
 
     def __getitem__(self, key: str) -> Any:
         try:
@@ -75,6 +79,7 @@ class Database(dict):
 
     def __delitem__(self, key) -> None:
         try:
+            self._update_timestamp()
             return self.records.__delitem__(key)
         except KeyError:
             return None
@@ -109,12 +114,18 @@ class Database(dict):
             meta[column] = self.__dict__.get(column)
         return meta
 
+    def _update_timestamp(self) -> None:
+        self.__dict__.update({
+            'updated_at': datetime.now().isoformat()
+        })
+
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
         _type, _keys = _from_maybe_list(key)
         values = [self.records.get(k, default) for k in _keys]
         return _return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
+        self._update_timestamp()
         return self.records.update(mapping, **kwargs)
 
     def modify(
@@ -132,6 +143,7 @@ class Database(dict):
             target = dict()
             target[_id] = _value
             self.records.update(target)
+        self._update_timestamp()
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
         _type, _items = _from_maybe_list(item)
@@ -142,11 +154,13 @@ class Database(dict):
             self.records[uid] = i
             ids.append(uid)
 
+        self._update_timestamp()
         return _return_maybe(_type, ids)
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
         _type, _keys = _from_maybe_list(key)
         popped = [self.records.pop(key) for key in _keys]
+        self._update_timestamp()
         return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
@@ -154,6 +168,7 @@ class Database(dict):
 
     def clear(self) -> None:
         self.records.clear()
+        self._update_timestamp()
 
     def find(self, func: Callable[..., bool]) -> List[str]:
         ids = []
@@ -187,10 +202,10 @@ class Database(dict):
         return del_count
 
     def commit(self) -> None:
-        pass
+        self._memory = copy.deepcopy(self.__dict__)
 
     def rollback(self) -> None:
-        pass
+        self.__dict__ = copy.deepcopy(self._memory)
 
     async def save(
         self,
