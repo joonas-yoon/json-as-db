@@ -41,14 +41,14 @@ def test_read_db_attributes(db: Database):
     assert record.get('not-exists-key') == None
 
 
-def test_db_add_by_id(db: Database):
+def test_db_add(db: Database):
     db.add({
 
     })
     pytest.skip()
 
 
-def test_db_add_by_list(db: Database):
+def test_db_add_many(db: Database):
     db.add([{
 
     }, {
@@ -58,11 +58,19 @@ def test_db_add_by_list(db: Database):
 
 
 def test_db_remove_by_id(db: Database):
-    db.remove(REC_ID)
-    pytest.skip()
+    assert db.count() == 2
+    target = db.get(REC_ID)
+    removed = db.remove(REC_ID)
+    assert db.count() == 1
+    assert removed == target
+    assert None == db.get(REC_ID)
+    try:
+        db.remove(REC_ID)
+    except KeyError:
+        pass
 
 
-def test_db_remove_by_list(db: Database):
+def test_db_remove_by_ids(db: Database):
     db.remove([REC_ID])
     pytest.skip()
 
@@ -72,7 +80,7 @@ def test_db_get_by_id(db: Database):
     assert found['randomInteger'] == 123
 
 
-def test_db_get_by_list(db: Database):
+def test_db_get_by_ids(db: Database):
     found = db.get([REC_ID, REC_ID_2])
     assert found[0]['randomInteger'] == 123
     assert found[1]['randomInteger'] == 321
@@ -85,7 +93,7 @@ def test_db_update_by_id(db: Database):
     pytest.skip()
 
 
-def test_db_update_by_list(db: Database):
+def test_db_update_by_ids(db: Database):
     keys = [REC_ID, REC_ID_2]
     values = [
         {
@@ -100,8 +108,18 @@ def test_db_update_by_list(db: Database):
 
 
 def test_db_all(db: Database):
-    db.all()
-    pytest.skip()
+    records = db.all()
+    logger.debug(records)
+    assert len(records) == 2
+    cat_names = set(map(lambda rec: rec['randomString'], records))
+    expected = set(['keyboard-cat', 'cheshire-cat'])
+    assert expected == cat_names
+
+
+def test_db_clear(db: Database):
+    assert db.count() == 2
+    db.clear()
+    assert db.count() == 0
 
 
 def test_db_find_by_function(db: Database):

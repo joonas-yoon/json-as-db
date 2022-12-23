@@ -103,11 +103,12 @@ class Database(dict):
         return return_maybe(_type, _items)
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
-        # self.records.pop()
-        pass
+        _type, _keys = from_maybe_list(key)
+        popped = [self.records.pop(key) for key in _keys]
+        return return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
-        pass
+        return self.records.values()
 
     def clear(self) -> None:
         self.records.clear()
