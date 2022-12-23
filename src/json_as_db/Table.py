@@ -1,3 +1,7 @@
+import json
+import aiofiles
+
+
 class Table(dict):
     __path__: str
     __name__: str
@@ -7,5 +11,7 @@ class Table(dict):
         super(Table, self).__init__(*arg, **kwargs)
 
 
-    def save(self) -> None:
-        pass
+    async def save(self) -> None:
+        async with aiofiles.open(self.__path__, mode='w') as f:
+            await f.write(json.dumps(self))
+
