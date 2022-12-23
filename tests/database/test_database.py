@@ -11,6 +11,7 @@ DB_FILENAME = 'basic.json'
 DB_FILEPATH = os.path.join(CUR_DIR, '..', 'samples', DB_FILENAME)
 REC_ID = 'kcbPuqpfV3YSHT8YbECjvh'
 REC_ID_2 = 'jmJKBJBAmGESC3rGbSb62T'
+REC_ID_NOT_EXIST = 'N0t3xIstKeyV41ueString'
 
 
 def setup_db() -> Database:
@@ -42,23 +43,43 @@ def test_read_db_attributes(db: Database):
 
 
 def test_db_add(db: Database):
-    db.add({
+    assert db.count() == 2
+    item = {
+        'randomInteger': 111,
+    }
+    new_id = db.add(item)
+    assert type(new_id) is str
+    assert db.count() == 3
 
-    })
-    pytest.skip()
+    found = db.get(new_id)
+    assert found == item
 
 
 def test_db_add_many(db: Database):
-    db.add([{
-
-    }, {
-
-    }])
-    pytest.skip()
-
-
-def test_db_remove_by_id(db: Database):
     assert db.count() == 2
+    item_1 = {
+        'randomInteger': 111,
+    }
+    item_2 = {
+        'randomInteger': 999,
+    }
+    new_ids = db.add([item_1, item_2])
+    assert type(new_ids) is list
+    assert len(new_ids) == 2
+    assert db.count() == 4
+
+    assert db.get(new_ids[0]) == item_1
+    assert db.get(new_ids[1]) == item_2
+
+
+def test_db_remove(db: Database):
+    assert db.count() == 2
+
+    try:
+        db.remove(REC_ID_NOT_EXIST)
+    except KeyError:
+        pass
+
     target = db.get(REC_ID)
     removed = db.remove(REC_ID)
     assert db.count() == 1

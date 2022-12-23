@@ -100,7 +100,7 @@ class Database(dict):
             self.records[uid] = i
             ids.append(uid)
 
-        return return_maybe(_type, _items)
+        return return_maybe(_type, ids)
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
         _type, _keys = from_maybe_list(key)
