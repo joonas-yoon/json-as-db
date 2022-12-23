@@ -2,6 +2,8 @@ import os
 import json
 import aiofiles
 
+from .Table import Table
+
 
 class Client:
     """
@@ -30,7 +32,15 @@ class Client:
         return (file_name, file_path)
 
 
-    async def create_table(self, name: str) -> dict:
+    def _wrapping_table(self, _dict: dict, name: str) -> Table:
+        table = Table(_dict)
+        path, name = self._get_table_path(name)
+        table.__path__ = path
+        table.__name__ = name
+        return table
+
+
+    async def create_table(self, name: str) -> Table:
         """_summary_
 
         Args:
@@ -51,10 +61,10 @@ class Client:
         async with aiofiles.open(file_path, mode='w') as f:
             await f.write(json.dumps(empty_dict))
 
-        return empty_dict
+        return self._wrapping_table(empty_dict, name)
 
 
-    async def get_table(self, name: str) -> dict:
+    async def get_table(self, name: str) -> Table:
         """_summary_
 
         Args:
@@ -72,7 +82,9 @@ class Client:
             raise FileNotFoundError(f"Not found json file: {file_path}, please create table first.")
 
         async with aiofiles.open(file_path, mode='r') as f:
-            return json.loads(await f.read())
+            data = json.loads(await f.read())
+
+        return self._wrapping_table(data, name)
 
 
     def remove_table(self, name: str) -> None:
