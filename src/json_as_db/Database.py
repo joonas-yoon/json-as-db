@@ -88,8 +88,21 @@ class Database(dict):
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
         return self.records.update(mapping, **kwargs)
 
-    def modify(self, id: Union[str, List[str]], values: Union[Any, List[Any]]) -> None:
-        pass
+    def modify(
+        self,
+        id: Union[str, List[str]],
+        value: Union[Any, List[Any]]
+    ) -> None:
+        type_id, ids = from_maybe_list(id)
+        type_value, values = from_maybe_list(value)
+        if len(ids) != len(values):
+            raise ValueError('Can not match ids and values. please check type and length of them')
+        for index in range(len(ids)):
+            _id, _value = ids[index], values[index]
+            print(_id)
+            target = dict()
+            target[_id] = _value
+            self.records.update(target)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
         _type, _items = from_maybe_list(item)
@@ -116,8 +129,11 @@ class Database(dict):
     def find(self, func: Callable) -> List[str]:
         pass
 
-    def has(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
-        pass
+    def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
+        _type, _keys = from_maybe_list(key)
+        key_set = set(self.records.keys())
+        values = [k in key_set for k in _keys]
+        return return_maybe(_type, values)
 
     def count(self) -> int:
         """_summary_

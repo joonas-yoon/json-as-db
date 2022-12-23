@@ -91,9 +91,24 @@ def test_db_remove(db: Database):
         pass
 
 
-def test_db_remove_by_ids(db: Database):
-    db.remove([REC_ID])
-    pytest.skip()
+def test_db_remove_single_list(db: Database):
+    assert db.count() == 2
+    target = db.get(REC_ID)
+    removed = db.remove([REC_ID])
+    assert db.count() == 1
+    assert type(removed) is list
+    assert removed[0] == target
+
+
+def test_db_remove_many(db: Database):
+    assert db.count() == 2
+    target_1 = db.get(REC_ID)
+    target_2 = db.get(REC_ID_2)
+    removed = db.remove([REC_ID, REC_ID_2])
+    assert db.count() == 0
+    assert type(removed) is list
+    assert removed[0] == target_1
+    assert removed[1] == target_2
 
 
 def test_db_get_by_id(db: Database):
@@ -107,25 +122,41 @@ def test_db_get_by_ids(db: Database):
     assert found[1]['randomInteger'] == 321
 
 
-def test_db_update_by_id(db: Database):
-    db.modify(REC_ID, {
+def test_db_modify_by_id(db: Database):
+    target = {
+        'newString': 'demian',
+    }
+    db.modify(REC_ID, target)
+    assert db.get(REC_ID) == target
 
-    })
-    pytest.skip()
 
-
-def test_db_update_by_ids(db: Database):
+def test_db_modify_by_ids(db: Database):
     keys = [REC_ID, REC_ID_2]
     values = [
         {
-
+            'nulla': ['non', 'malesuada'],
         },
         {
-
+            'suspendisse': {
+                'at': 'nulla quis',
+            },
         }
     ]
     db.modify(keys, values)
-    pytest.skip()
+    assert db.get(keys[0]) == values[0]
+    assert db.get(keys[1]) == values[1]
+
+
+def test_db_modify_wrong_params(db: Database):
+    try:
+        # 1 key, 2 values
+        db.modify(REC_ID, [{}, {}])
+        # 1 key but list, 1 value
+        db.modify([REC_ID], {})
+        # 2 keys, 1 value in list
+        db.modify([REC_ID, REC_ID_2], [{}])
+    except ValueError:
+        pass
 
 
 def test_db_all(db: Database):
@@ -143,19 +174,24 @@ def test_db_clear(db: Database):
     assert db.count() == 0
 
 
-def test_db_find_by_function(db: Database):
+def test_db_find(db: Database):
     db.find(lambda x: True)
     pytest.skip()
 
 
 def test_db_has(db: Database):
-    db.has(REC_ID)
-    pytest.skip()
+    assert db.has(REC_ID) == True
+    assert db.has(REC_ID_2) == True
+    assert db.has(REC_ID_NOT_EXIST) == False
 
 
-def test_db_has(db: Database):
-    db.has([REC_ID, REC_ID_2])
-    pytest.skip()
+def test_db_has_many(db: Database):
+    assert db.has([REC_ID, REC_ID_2]) == [True, True]
+    assert db.has([REC_ID, REC_ID_NOT_EXIST]) == [True, False]
+    assert db.has([REC_ID_NOT_EXIST, REC_ID_2]) == [False, True]
+
+    for has in db.has([REC_ID, REC_ID_NOT_EXIST, REC_ID_2]):
+        assert type(has) is bool
 
 
 def test_db_count(db: Database):
