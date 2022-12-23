@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 
-from json_as_db import Client, Table
+from json_as_db import Client
 from utils import file, logger
 
 
@@ -50,4 +50,32 @@ async def test_client_create_table(client: Client):
     path = os.path.join(DB_DIR, 'table.json')
     logger.debug(path)
     assert os.path.exists(path)
+
+
+@pytest.mark.asyncio
+async def test_client_create_table_conflict(client: Client):
+    path = os.path.join(DB_DIR, 'table.json')
+    file.touch(path)
+    try:
+        table = await client.create_table('table')
+    except FileExistsError:
+        pass
+
+
+@pytest.mark.asyncio
+async def test_client_get_table(client: Client):
+    path = os.path.join(DB_DIR, 'table.json')
+
+    dummy = dict(a=1, b="str", c=False, d=3.14)
+
+    with open(path, 'w') as f:
+        json.dump(dummy, f)
+
+    with open(path, 'r') as f:
+        answer = json.load(f)
+
+    assert json.dumps(dummy) == json.dumps(answer)
+
+    table = await client.get_table('table')
+    assert json.dumps(table) == json.dumps(answer)
 
