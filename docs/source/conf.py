@@ -3,7 +3,9 @@ import sys
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 src_dir = os.path.join(cwd, '..', '..', 'src')
-sys.path.insert(0, os.path.abspath(cwd))
+src_dir = os.path.abspath(src_dir)
+sys.path.insert(0, src_dir)
+print('Add src/ into pythonpath:', src_dir)
 
 # Configuration file for the Sphinx documentation builder.
 #
