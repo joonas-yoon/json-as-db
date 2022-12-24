@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "json_as_db"
-version = "0.1.0"
+version = "0.1.0b"
 description = "Using JSON as very lightweight database"
-readme = "README.md"
+readme = "../README.md"
 license = "MIT"
 keywords = ["json", "lightweight", "database"]
 authors = [
@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: System :: Filesystems"
 ]
 packages = [
-    { include = "json_as_db", from = "src" },
+    { include = "json_as_db" },
 ]
 exclude = [
   "examples*",
@@ -32,6 +32,7 @@ exclude = [
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
 aiofiles = ">=22.1.0"
+shortuuid = ">=1.0.11"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=5.0.0"
