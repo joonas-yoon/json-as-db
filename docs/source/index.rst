@@ -3,15 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to json-as-db's documentation!
+Welcome to JSON-as-DB's documentation!
 ======================================
+
+Header
+------
+
+Hello.
+
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :glob:
 
+   install
+   overview
+   examples
    modules
 
+
+License
+-------
+
+Under the MIT license.
 
 
 Indices and tables

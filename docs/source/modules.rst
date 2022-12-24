@@ -1,5 +1,5 @@
-json_as_db
-==========
+Modules
+=======
 
 .. toctree::
    :maxdepth: 4
