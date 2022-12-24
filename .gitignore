@@ -172,3 +172,20 @@ cython_debug/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Editor backup files #
+#######################
+*~
