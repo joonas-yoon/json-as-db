@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "json_as_db"
-version = "0.1.0b"
+version = "0.1.1b0"
 description = "Using JSON as very lightweight database"
-readme = "../README.md"
+readme = "README.md"
 license = "MIT"
 keywords = ["json", "lightweight", "database"]
 authors = [
@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: System :: Filesystems"
 ]
 packages = [
-    { include = "json_as_db" },
+    { include = "json_as_db", from = "src" },
 ]
 exclude = [
   "examples*",
@@ -39,10 +39,10 @@ pytest = ">=5.0.0"
 pytest-asyncio = ">=0.16.0"
 
 [tool.poetry.urls]
-homepage = "http://joonas.io/json-db"
+homepage = "https://www.joonas.io/json-as-db"
 documentation = "https://json-as-db.readthedocs.io/"
-repository = "https://github.com/joonas-yoon/json-db"
-changelog = "https://github.com/joonas-yoon/json-db/blob/master/CHANGELOG.md"
+repository = "https://github.com/joonas-yoon/json-as-db"
+changelog = "https://github.com/joonas-yoon/json-as-db/blob/master/CHANGELOG.md"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
