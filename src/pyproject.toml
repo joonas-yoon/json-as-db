@@ -40,7 +40,7 @@ pytest-asyncio = ">=0.16.0"
 
 [tool.poetry.urls]
 homepage = "http://joonas.io/json-db"
-documentation = "http://joonas.io/json-db"
+documentation = "https://json-as-db.readthedocs.io/"
 repository = "https://github.com/joonas-yoon/json-db"
 changelog = "https://github.com/joonas-yoon/json-db/blob/master/CHANGELOG.md"
 
