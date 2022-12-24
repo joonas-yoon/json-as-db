@@ -1,8 +1,10 @@
 # JSON-as-DB
 
-![Python Version Badge] [![PyTest Badge]](https://github.com/joonas-yoon/json-as-db/actions/workflows/pytest.yml) ![Wheel Badge] [![Hits Badge]](#)
+![Python Version Badge] [![RTD](https://readthedocs.org/projects/json-as-db/badge/?version=latest)](https://json-as-db.readthedocs.io/) [![PyTest Badge]](https://github.com/joonas-yoon/json-as-db/actions/workflows/pytest.yml) ![Wheel Badge] [![Hits Badge]](#)
 
 Using JSON as very lightweight database
+
+- Documentation: https://json-as-db.readthedocs.io/
 
 ## Installation
 
