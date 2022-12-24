@@ -10,11 +10,11 @@ from .constants import package_name
 __all__ = ['Database']
 
 _defaults_save_file_kwargs = dict(
-    mode = "w",
-    encoding = "utf-8",
+    mode="w",
+    encoding="utf-8",
 )
 _defaults_save_json_kwargs = dict(
-    sort_keys = True,
+    sort_keys=True,
 )
 
 
@@ -136,7 +136,8 @@ class Database(dict):
         type_id, ids = _from_maybe_list(id)
         type_value, values = _from_maybe_list(value)
         if len(ids) != len(values):
-            raise ValueError('Can not match ids and values. please check type and length of them')
+            raise ValueError(
+                'Can not match ids and values. please check type and length of them')
         for index in range(len(ids)):
             _id, _value = ids[index], values[index]
             print(_id)
@@ -210,11 +211,11 @@ class Database(dict):
     async def save(
         self,
         file_kwds: dict = dict(
-            mode = "w",
-            encoding = "utf-8",
+            mode="w",
+            encoding="utf-8",
         ),
         json_kwds: dict = dict(
-            sort_keys = True,
+            sort_keys=True,
         )
     ) -> None:
         """
@@ -233,8 +234,8 @@ class Database(dict):
 
         async with aiofiles.open(self.filepath, **file_kwds) as f:
             dict_out = dict(self.__dict__)
-            hidden_keys = list(filter(lambda i: i.startswith('__'), self.__dict__.keys()))
+            hidden_keys = list(
+                filter(lambda i: i.startswith('_'), self.__dict__.keys()))
             for key in hidden_keys:
                 dict_out.pop(key)
             await f.write(json.dumps(dict_out, **json_kwds))
-
