@@ -8,9 +8,6 @@ on:
 jobs:
   publish:
     defaults:
-    run:
-      shell: bash
-      working-directory: src
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
