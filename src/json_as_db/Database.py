@@ -101,6 +101,9 @@ class Database(dict):
     def __str__(self):
         return str(self.__repr__())
 
+    def __len__(self):
+        return len(self.data)
+
     def keys(self) -> list:
         return self.data.keys()
 
