@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 src_dir = os.path.join(cwd, '..', '..', 'src')
@@ -16,17 +17,24 @@ print('Add src/ into pythonpath:', src_dir)
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'json-as-db'
-copyright = '2022, Joonas'
+copyright = f'2022-{datetime.now().year}, Joonas Yoon'
 author = 'Joonas'
 release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+extensions = [
+  'sphinx.ext.autodoc',
+  'sphinx.ext.githubpages',
+  'sphinx.ext.napoleon',
+  'sphinx.ext.viewcode',
+  'sphinx_copybutton',
+  'sphinx-prompt',
+]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['Thumbs.db', '.DS_Store']
 
 # The suffix(es) of source filenames.
 # source_suffix = ['.rst', '.md']

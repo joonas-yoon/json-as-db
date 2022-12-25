@@ -1,3 +1,11 @@
+.highlight {
+  background-color: #fbffe0 !important;
+}
+
+.highlight .go {
+  color: #5e6048;
+}
+
 .rst-content .toctree-wrapper ul li {
   margin-top: 4px;
 }
