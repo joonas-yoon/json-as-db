@@ -1,0 +1,8 @@
+.rst-content .toctree-wrapper ul li {
+  margin-top: 4px;
+}
+
+.rst-content .toctree-wrapper ul li > ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}

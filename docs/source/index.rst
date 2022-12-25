@@ -3,13 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to JSON-as-DB's documentation!
+JSON-as-DB Documentation
 ======================================
 
-Header
-------
+Using JSON file as a very simple and lightweight database.
 
-Hello.
+Save all your records into file as JSON format to be easy to read for human.
+also fetch from the file just as what you see.
 
 
 Contents
