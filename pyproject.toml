@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "json_as_db"
-version = "0.1.1b0"
+version = "0.1.1"
 description = "Using JSON as very lightweight database"
 readme = "README.md"
 license = "MIT"
