@@ -53,7 +53,7 @@ class Database(dict):
         'created_at',
         'updated_at',
     ]
-    _memory = dict()
+    __memory__ = dict()
 
     def __init__(self, *arg, **kwargs):
         self.__dict__ = dict(*arg, **kwargs)
@@ -87,11 +87,19 @@ class Database(dict):
     def __contains__(self, key, **kwargs) -> bool:
         return self.records.__contains__(key, **kwargs)
 
+    def __exports_only_publics(self) -> dict:
+        d = self.__dict__
+        out = copy.deepcopy(d)
+        hidden_keys = list(filter(lambda i: i.startswith('__'), d.keys()))
+        for key in hidden_keys:
+            out.pop(key)
+        return out
+
     def __repr__(self):
-        return self.__dict__.__repr__()
+        return self.__exports_only_publics().__repr__()
 
     def __str__(self):
-        return str(self.__dict__)
+        return str(self.__repr__())
 
     def keys(self) -> list:
         return self.records.keys()
@@ -203,10 +211,10 @@ class Database(dict):
         return del_count
 
     def commit(self) -> None:
-        self._memory = copy.deepcopy(self.__dict__)
+        self.__memory__ = copy.deepcopy(self.__dict__)
 
     def rollback(self) -> None:
-        self.__dict__ = copy.deepcopy(self._memory)
+        self.__dict__ = copy.deepcopy(self.__memory__)
 
     async def save(
         self,
@@ -233,9 +241,5 @@ class Database(dict):
         json_kwds = _override_only_unset(json_kwds, _defaults_save_json_kwargs)
 
         async with aiofiles.open(self.filepath, **file_kwds) as f:
-            dict_out = dict(self.__dict__)
-            hidden_keys = list(
-                filter(lambda i: i.startswith('_'), self.__dict__.keys()))
-            for key in hidden_keys:
-                dict_out.pop(key)
+            dict_out = self.__exports_only_publics()
             await f.write(json.dumps(dict_out, **json_kwds))
