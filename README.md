@@ -4,7 +4,42 @@
 
 Using JSON as very lightweight database
 
-- Documentation: https://json-as-db.readthedocs.io/
+```python
+>>> db = client.create_database('table_1')
+>>> db.add([{
+...   "id": "1001",
+...   "type": "Regular"
+... }, {
+...   "id": "1002",
+...   "type": "Chocolate"
+... })
+['FqkmbYFSCRCAHQWydhM69v', 'RUJGcVBFANvNRReXa8U3En']
+>>> db.save(json_kwds={'indent': 4})
+```
+
+```js
+// table_1.json
+{
+    "created_at": "2022-12-25T16:50:02.459068",
+    "creator": "json_as_db",
+    "data": {
+        "FqkmbYFSCRCAHQWydhM69v": {
+            "id": "1001",
+            "type": "Regular"
+        },
+        "RUJGcVBFANvNRReXa8U3En": {
+            "id": "1002",
+            "type": "Chocolate"
+        }
+    },
+    "updated_at": "2022-12-25T16:51:36.276790",
+    "version": "1.0.0"
+}
+```
+
+## Documentation
+
+- Read the Docs - https://json-as-db.readthedocs.io/
 
 ## Installation
 
