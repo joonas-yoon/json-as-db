@@ -21,8 +21,8 @@ Contents
 
    install
    overview
-   examples
-   modules
+   examples/index
+   modules/index
 
 
 License
