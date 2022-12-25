@@ -30,6 +30,7 @@ extensions = [
   'sphinx.ext.napoleon',
   'sphinx.ext.viewcode',
   'sphinx_copybutton',
+  'sphinx_rtd_dark_mode',
   'sphinx-prompt',
 ]
 
@@ -44,8 +45,17 @@ source_suffix = '.rst'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+    "collapse_navigation": False,
+}
+
 html_static_path = ['_static']
 
 
 def setup(app):
     app.add_css_file('override.css')
+
+# -- Options for extensions --------------------------------------------------
+
+# Default in light mode
+default_dark_mode = False

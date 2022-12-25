@@ -9,7 +9,7 @@ pip install -r ../src/requirements.txt
 For documentation:
 
 ```
-pip install sphinx sphinx-rtd-theme sphinx-copybutton sphinx-prompt
+pip install sphinx sphinx-rtd-theme sphinx-copybutton sphinx-prompt sphinx-rtd-dark-mode
 ```
 
 ## Build document
