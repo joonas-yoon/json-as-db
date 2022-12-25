@@ -80,9 +80,12 @@ async def test_client_get_database():
 
     with open(path, 'r') as f:
         answer = json.load(f)
+        logger.debug(answer)
 
-    assert expected == answer['records']['jmJKBJBAmGESC3rGbSb62T']
+    assert expected == answer['data']['jmJKBJBAmGESC3rGbSb62T']
 
     database = await client.get_database('basic')
+    logger.debug(expected)
+    logger.debug(database)
     assert expected == database['jmJKBJBAmGESC3rGbSb62T']
 

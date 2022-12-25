@@ -45,7 +45,7 @@ def _override_only_unset(__dict: dict, __target: dict):
 class Database(dict):
     __path__: str
     __name__: str
-    __records__ = 'records'
+    __data__ = 'data'
     __version__ = '1.0.0'
     __metadata__ = [
         'version',
@@ -63,14 +63,14 @@ class Database(dict):
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
-            self.__records__: dict(),
+            self.__data__: dict(),
         }
         self.__dict__ = _override_only_unset(self.__dict__, defaults)
         self.commit()
 
     def __getitem__(self, key: str) -> Any:
         try:
-            return self.records.__getitem__(key)
+            return self.data.__getitem__(key)
         except KeyError:
             return None
 
@@ -80,12 +80,12 @@ class Database(dict):
     def __delitem__(self, key) -> None:
         try:
             self._update_timestamp()
-            return self.records.__delitem__(key)
+            return self.data.__delitem__(key)
         except KeyError:
             return None
 
     def __contains__(self, key, **kwargs) -> bool:
-        return self.records.__contains__(key, **kwargs)
+        return self.data.__contains__(key, **kwargs)
 
     def __exports_only_publics(self) -> dict:
         d = self.__dict__
@@ -102,14 +102,14 @@ class Database(dict):
         return str(self.__repr__())
 
     def keys(self) -> list:
-        return self.records.keys()
+        return self.data.keys()
 
     def values(self) -> list:
-        return self.records.values()
+        return self.data.values()
 
     @property
-    def records(self) -> dict:
-        return self.__dict__.get(self.__records__)
+    def data(self) -> dict:
+        return self.__dict__.get(self.__data__)
 
     @property
     def filepath(self) -> str:
@@ -129,12 +129,12 @@ class Database(dict):
 
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
         _type, _keys = _from_maybe_list(key)
-        values = [self.records.get(k, default) for k in _keys]
+        values = [self.data.get(k, default) for k in _keys]
         return _return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
         self._update_timestamp()
-        return self.records.update(mapping, **kwargs)
+        return self.data.update(mapping, **kwargs)
 
     def modify(
         self,
@@ -161,7 +161,7 @@ class Database(dict):
             _id, _value = ids[index], values[index]
             target = dict()
             target[_id] = _value
-            self.records.update(target)
+            self.data.update(target)
         self._update_timestamp()
         return _return_maybe(type_id, values)
 
@@ -171,7 +171,7 @@ class Database(dict):
         ids = []
         for i in _items:
             uid = shortuuid.uuid()
-            self.records[uid] = i
+            self.data[uid] = i
             ids.append(uid)
 
         self._update_timestamp()
@@ -179,27 +179,27 @@ class Database(dict):
 
     def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
         _type, _keys = _from_maybe_list(key)
-        popped = [self.records.pop(key) for key in _keys]
+        popped = [self.data.pop(key) for key in _keys]
         self._update_timestamp()
         return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
-        return list(self.records.values())
+        return list(self.data.values())
 
     def clear(self) -> None:
-        self.records.clear()
+        self.data.clear()
         self._update_timestamp()
 
     def find(self, func: Callable[..., bool]) -> List[str]:
         ids = []
-        for id, value in self.records.items():
+        for id, value in self.data.items():
             if func(value):
                 ids.append(id)
         return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
         _type, _keys = _from_maybe_list(key)
-        key_set = set(self.records.keys())
+        key_set = set(self.data.keys())
         values = [k in key_set for k in _keys]
         return _return_maybe(_type, values)
 
@@ -207,9 +207,9 @@ class Database(dict):
         """
 
         Returns:
-            int: indicates the count of all records
+            int: indicates the count of all data
         """
-        return len(self.records.keys())
+        return len(self.data.keys())
 
     def drop(self) -> int:
         """
@@ -218,7 +218,7 @@ class Database(dict):
             int: indicates the count of dropped items
         """
         del_count = self.count()
-        self.records.clear()
+        self.data.clear()
         return del_count
 
     def commit(self) -> None:
