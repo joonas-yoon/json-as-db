@@ -24,8 +24,7 @@ clone the repository.
 
     git clone https://github.com/joonas-yoon/json-as-db.git
     cd json-as-db
-    pip install -r src/requirements.txt
-    pip install -e src
+    pip install -e .
 
 
 If you want to test methods working well, here is the unit tests in ``tests/``
