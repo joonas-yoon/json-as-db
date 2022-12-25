@@ -46,7 +46,7 @@ following example, `Client` read the file from ``path/dir/sample.json``.
 
 .. code-block:: python
 
-    >> await client.get_database('sample')
+    >>> await client.get_database('sample')
     {'records': {}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
 
 
@@ -82,9 +82,9 @@ Single item
 .. code-block:: python
 
     >>> db.add({
-        "id": 1001,
-        "type": "Regular"
-    })
+    ...     "id": 1001,
+    ...     "type": "Regular"
+    ... })
     "aT7kM2pW8L7JisSkNjpAhr"
 
 
@@ -93,19 +93,19 @@ Multiple items
 .. code-block:: python
 
     >>> db.add([
-      {
-        "id": "1001",
-        "type": "Regular"
-      },
-      {
-        "id": "1002",
-        "type": "Chocolate"
-      },
-      {
-        "id": "1003",
-        "type": "Blueberry"
-      },
-    ])
+    ...   {
+    ...     "id": "1001",
+    ...     "type": "Regular"
+    ...   },
+    ...   {
+    ...     "id": "1002",
+    ...     "type": "Chocolate"
+    ...   },
+    ...   {
+    ...     "id": "1003",
+    ...     "type": "Blueberry"
+    ...   },
+    ... ])
     ['FqkmbYFSCRCAHQWydhM69v', 'RUJGcVBFANvNRReXa8U3En', 'F3c3rWpzb3Wh2XYQpoYu9v']
 
 
@@ -155,10 +155,10 @@ Single item
 .. code-block:: python
 
     >>> db.modify(
-        id="FqkmbYFSCRCAHQWydhM69v",
-        value={
-            "type": "Irregular"
-        })
+    ...     id="FqkmbYFSCRCAHQWydhM69v",
+    ...     value={
+    ...         "type": "Irregular"
+    ...     })
     {'type': 'Irregular'}
 
 
@@ -167,10 +167,10 @@ Multiple items
 .. code-block:: python
 
     >>> db.modify(
-        id=["FqkmbYFSCRCAHQWydhM69v", "RUJGcVBFANvNRReXa8U3En"],
-        value=[
-            {'type': 'Apple'}, {'type': 'Orange'}
-        ])
+    ...     id=["FqkmbYFSCRCAHQWydhM69v", "RUJGcVBFANvNRReXa8U3En"],
+    ...     value=[
+    ...         {'type': 'Apple'}, {'type': 'Orange'}
+    ...     ])
     [{'type': 'Apple'}, {'type': 'Orange'}]
 
 
@@ -194,16 +194,12 @@ When ``commit()``, it saves its states and all items at that time. Using
 
 .. code-block:: python
 
-    # Show all items before commit
-    >> db.all()
+    >>> db.all()  # Show all items before commit
     [{'type': 'Orange'}]
-    # Commit
-    >> db.commit()
-    # Add some items after commit
-    >> db.add([{'type': 'Apple'}, {'type': 'Banana'}])
-    >> db.all()
+    >>> db.commit()
+    >>> db.add([{'type': 'Apple'}, {'type': 'Banana'}])  # Add some items after commit
+    >>> db.all()
     [{'type': 'Orange'}, {'type': 'Apple'}, {'type': 'Banana'}]
-    # Rollback
     >>> db.rollback()
     >>> db.all()
     [{'type': 'Orange'}]
@@ -220,11 +216,13 @@ by getting methods with `Client` class.
     >>> await db.save()
 
 It supports keyword parameters for JSON formatter and options to file saving.
-Please refer to the document page of modules in details
+Please refer to the document page of modules in details.
 
 .. code-block:: python
 
     >>> await db.save(file_kwds={'encoding': 'utf-8'}, json_kwds={'indent': 4})
+
+then you can see the file content as like the following,
 
 .. code-block:: json
 

@@ -1,9 +1,25 @@
-.highlight {
-  background-color: #fbffe0 !important;
+html[data-theme="dark"] body {
+  background-color: #101010;
 }
 
-.highlight .go {
+html[data-theme='dark'] .wy-side-nav-search {
+  background-color: #003b62 !important;
+}
+
+.rst-content div[class^="highlight"] {
+  background-color: #fbffe0;
+}
+
+.rst-content div[class^="highlight"] .gp {
   color: #5e6048;
+}
+
+html[data-theme="dark"] .rst-content div[class^="highlight"] {
+  background-color: #17181c;
+}
+
+html[data-theme="dark"] .rst-content div[class^="highlight"] .gp {
+  color: #dfe769;
 }
 
 .rst-content .toctree-wrapper ul li {
@@ -13,4 +29,29 @@
 .rst-content .toctree-wrapper ul li > ul {
   margin-top: 0;
   margin-bottom: 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #404040;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
