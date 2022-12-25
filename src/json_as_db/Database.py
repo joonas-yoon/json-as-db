@@ -140,7 +140,18 @@ class Database(dict):
         self,
         id: Union[str, List[str]],
         value: Union[Any, List[Any]]
-    ) -> None:
+    ) -> Union[Any, List[Any]]:
+        """
+        Args:
+            id (str | List[str]): id(s) to modify
+            value (Any | List[Any]): value(s) to modify
+
+        Raises:
+            ValueError: type or length is not matched
+
+        Returns:
+            Any | List[Any]: Modified value(s)
+        """
         type_id, ids = _from_maybe_list(id)
         type_value, values = _from_maybe_list(value)
         if len(ids) != len(values):
@@ -148,11 +159,11 @@ class Database(dict):
                 'Can not match ids and values. please check type and length of them')
         for index in range(len(ids)):
             _id, _value = ids[index], values[index]
-            print(_id)
             target = dict()
             target[_id] = _value
             self.records.update(target)
         self._update_timestamp()
+        return _return_maybe(type_id, values)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
         _type, _items = _from_maybe_list(item)
@@ -173,7 +184,7 @@ class Database(dict):
         return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
-        return self.records.values()
+        return list(self.records.values())
 
     def clear(self) -> None:
         self.records.clear()
