@@ -20,7 +20,6 @@ Contents
    :glob:
 
    install
-   overview
    examples/index
    modules/index
 
