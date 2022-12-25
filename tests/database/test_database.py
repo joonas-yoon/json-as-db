@@ -160,10 +160,10 @@ def test_db_modify_wrong_params(db: Database):
 
 
 def test_db_all(db: Database):
-    records = db.all()
-    logger.debug(records)
-    assert len(records) == 2
-    cat_names = set(map(lambda rec: rec['randomString'], records))
+    items = db.all()
+    logger.debug(items)
+    assert len(items) == 2
+    cat_names = set(map(lambda rec: rec['randomString'], items))
     expected = set(['keyboard-cat', 'cheshire-cat'])
     assert expected == cat_names
 

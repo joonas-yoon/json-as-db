@@ -163,7 +163,7 @@ then you can see the file content as like the following,
     {
         "created_at": "2022-12-25T16:50:02.459068",
         "creator": "json_as_db",
-        "records": {
+        "data": {
             "AwMJDzrjkpWJCee5iSozXW": {
                 "type": "Orange"
             }

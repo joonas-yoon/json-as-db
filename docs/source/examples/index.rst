@@ -34,7 +34,7 @@ can deal with this object just like dictionary.
 .. code-block:: python
 
     >>> await client.create_database('sample')
-    {'records': {}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
+    {'data': {}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
 
 
 Get Database from file
@@ -50,7 +50,7 @@ following example, `Client` read the file from ``path/dir/sample.json``.
 .. code-block:: python
 
     >>> await client.get_database('sample')
-    {'records': {}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
+    {'data': {}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
 
 
 Remove Database
