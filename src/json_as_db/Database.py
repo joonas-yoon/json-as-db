@@ -63,6 +63,7 @@ class Database(dict):
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
+            # self.__data__: dict(*arg, **kwargs),
             self.__data__: dict(),
         }
         self.__dict__ = _override_only_unset(self.__dict__, defaults)

@@ -19,13 +19,13 @@ def teardown_files(root_dir: str):
         pass
 
 
-@pytest.mark.asyncio
-async def test_basic_usage():
+def test_init_and_remove():
     root_dir = os.path.join(CUR_DIR, file.create_dirpath(prefix='test_usage'))
 
     client = Client(root_dir)
-    database = await client.create_database('my_database')
-    database2 = await client.get_database('my_database')
+    db = client.create_database('my_database')
+    db_get = client.get_database('my_database')
+    assert db == db_get
     client.remove_database('my_database')
 
     teardown_files(root_dir)

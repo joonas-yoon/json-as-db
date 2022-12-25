@@ -249,7 +249,7 @@ async def test_db_save():
     ]
 
     client = Client(temp_dir)
-    db = await client.create_database('db')
+    db = client.create_database('db')
     logger.debug(f'[before saving] {db}')
     db.add(samples)
     logger.debug(f'[after saving] {db}')
@@ -265,7 +265,7 @@ async def test_db_save():
         saved = json.load(f)
         logger.debug(f'[saved] {saved}')
 
-    saved = await client.get_database('db')
+    saved = client.get_database('db')
     assert saved == db
 
     file.remove(temp_dir)

@@ -1,11 +1,11 @@
 import os
-import json
-import aiofiles
+from abc import ABCMeta, abstractmethod
 
-from .Database import Database
+from typing import Tuple
+from ..Database import Database
 
 
-class Client:
+class BaseClient(metaclass=ABCMeta):
     """
     The Client object contains settings like directory path
     This provides
@@ -25,7 +25,7 @@ class Client:
         else:
             os.makedirs(self.root_dir, exist_ok=True)
 
-    def _get_database_path(self, database_name: str) -> tuple:
+    def _get_database_path(self, database_name: str) -> Tuple[str, str]:
         """ returns (file_name, file_path) """
         file_name = f"{database_name}.json"
         file_path = os.path.join(self.root_dir, file_name)
@@ -38,7 +38,21 @@ class Client:
         database.__name__ = file_name
         return database
 
-    async def create_database(self, database_name: str) -> Database:
+    def _ensure_get_filepath(self, database_name: str, ensure_exists: bool = True) -> str:
+        file_name, file_path = self._get_database_path(database_name)
+
+        exists = os.path.exists(file_path)
+        if ensure_exists != exists:
+            if not exists:
+                raise FileNotFoundError(
+                    f"Not found json file: {file_path}, please create database first.")
+            else:
+                raise FileExistsError(f"Failed to create file on {file_path}")
+
+        return file_path
+
+    @abstractmethod
+    def create_database(self, database_name: str) -> Database:
         """
 
         Args:
@@ -50,18 +64,10 @@ class Client:
         Returns:
             dict: built-in type of dictionary
         """
-        file_name, file_path = self._get_database_path(database_name)
+        pass
 
-        if os.path.exists(file_path):
-            raise FileExistsError(f"Failed to create file on {file_path}")
-
-        empty_dict = dict()
-        async with aiofiles.open(file_path, mode='w') as f:
-            await f.write(json.dumps(empty_dict))
-
-        return self._wrapping_database(empty_dict, database_name)
-
-    async def get_database(self, database_name: str) -> Database:
+    @abstractmethod
+    def get_database(self, database_name: str) -> Database:
         """
 
         Args:
@@ -73,16 +79,7 @@ class Client:
         Returns:
             dict: built-in type of dictionary
         """
-        file_name, file_path = self._get_database_path(database_name)
-
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f"Not found json file: {file_path}, please create database first.")
-
-        async with aiofiles.open(file_path, mode='r') as f:
-            data = json.loads(await f.read())
-
-        return self._wrapping_database(data, database_name)
+        pass
 
     def remove_database(self, database_name: str) -> None:
         """
@@ -93,10 +90,6 @@ class Client:
         Raises:
             FileNotFoundError: when there is no json file to remove
         """
-        file_name, file_path = self._get_database_path(database_name)
-
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f"Not found json file: {file_path}, please create database first.")
-
+        file_path = self._ensure_get_filepath(database_name, ensure_exists=True)
         os.remove(file_path)
+

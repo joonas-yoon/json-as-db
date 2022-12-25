@@ -1,6 +1,7 @@
 import os
 import json
 import pytest
+import aiofiles
 
 from json_as_db import Client
 from utils import file, logger
@@ -30,9 +31,8 @@ def client() -> Client:
     teardown_client()
 
 
-@pytest.mark.asyncio
-async def test_client_create_empty_database(client: Client):
-    database = await client.create_database('database')
+def test_client_create_empty_database(client: Client):
+    database = client.create_database('database')
     assert isinstance(database, dict)
     path = os.path.join(DB_DIR, 'database.json')
     logger.debug(path)
@@ -43,21 +43,19 @@ async def test_client_create_empty_database(client: Client):
         json.load(f)
 
 
-@pytest.mark.asyncio
-async def test_client_create_database(client: Client):
-    database = await client.create_database('database')
+def test_client_create_database(client: Client):
+    database = client.create_database('database')
     assert isinstance(database, dict)
     path = os.path.join(DB_DIR, 'database.json')
     logger.debug(path)
     assert os.path.exists(path)
 
 
-@pytest.mark.asyncio
-async def test_client_create_database_conflict(client: Client):
+def test_client_create_database_conflict(client: Client):
     path = os.path.join(DB_DIR, 'database.json')
     file.touch(path)
     try:
-        database = await client.create_database('database')
+        database = client.create_database('database')
     except FileExistsError:
         pass
 
@@ -78,13 +76,13 @@ async def test_client_get_database():
       ]
     }
 
-    with open(path, 'r') as f:
-        answer = json.load(f)
+    async with aiofiles.open(path, 'r') as f:
+        answer = json.loads(await f.read())
         logger.debug(answer)
 
     assert expected == answer['data']['jmJKBJBAmGESC3rGbSb62T']
 
-    database = await client.get_database('basic')
+    database = client.get_database('basic')
     logger.debug(expected)
     logger.debug(database)
     assert expected == database['jmJKBJBAmGESC3rGbSb62T']
