@@ -5,20 +5,18 @@
 Using JSON as very lightweight database
 
 ```python
->>> db = client.create_database('table_1')
->>> db.add([{
-...   "id": "1001",
-...   "type": "Regular"
-... }, {
+>>> db = Database()
+>>> db.load('output.json')   # Load database from file
+>>> db.add([{                # Add items what you want to add
 ...   "id": "1002",
 ...   "type": "Chocolate"
 ... })
 ['FqkmbYFSCRCAHQWydhM69v', 'RUJGcVBFANvNRReXa8U3En']
->>> db.save(json_kwds={'indent': 4})
+>>> db.save('output.json', json_kwds={'indent': 4})   # Just save it into file.
 ```
 
 ```js
-// table_1.json
+// output.json
 {
     "created_at": "2022-12-25T16:50:02.459068",
     "creator": "json_as_db",
@@ -32,7 +30,7 @@ Using JSON as very lightweight database
             "type": "Chocolate"
         }
     },
-    "updated_at": "2022-12-25T16:51:36.276790",
+    "updated_at": "2022-12-28T16:51:36.276790",
     "version": "1.0.0"
 }
 ```
