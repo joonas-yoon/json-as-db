@@ -139,22 +139,35 @@ When ``commit()``, it saves its states and all items at that time. Using
     [{'type': 'Orange'}]
 
 
-Save
+Load
 ^^^^
 
-Save `Database` into file as JSON format. You can read from this saved file
-by getting methods with `Client` class.
+You can get the `Database` object from local JSON formatted file.
+
+This method reads JSON file from directory where given path. In
+following example, it reads the file from ``path/dir/sample.json``.
 
 .. code-block:: python
 
-    >>> await db.save()
+    >>> db.load('path/dir/sample.json')
+    {'data': {'2g4kaFAiDBPchz66HNPsZa': {'type': 'Orange'}}, 'creator': 'json_as_db', 'created_at': '2022-12-25T14:23:28.906103', 'version': '1.0.0', 'updated_at': '2022-12-25T14:23:28.906103'}
+
+
+Save
+^^^^
+
+Save `Database` into file as JSON format. You can read from this saved file.
+
+.. code-block:: python
+
+    >>> db.save()
 
 It supports keyword parameters for JSON formatter and options to file saving.
 Please refer to the document page of modules in details.
 
 .. code-block:: python
 
-    >>> await db.save(file_kwds={'encoding': 'utf-8'}, json_kwds={'indent': 4})
+    >>> db.save(file_kwds={'encoding': 'utf-8'}, json_kwds={'indent': 4})
 
 then you can see the file content as like the following,
 

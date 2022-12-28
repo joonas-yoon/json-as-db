@@ -1,8 +1,10 @@
 Modules
 =======
 
-.. toctree::
-   :maxdepth: 2
+Database
+--------
 
-   client
-   database
+.. automodule:: json_as_db.Database
+   :members:
+   :undoc-members:
+   :show-inheritance:

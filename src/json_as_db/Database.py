@@ -1,21 +1,17 @@
+import os
 import json
 import copy
 import shortuuid
-import aiofiles
 
 from datetime import datetime
 from typing import Any, Union, List, Callable, Tuple
-from .constants import package_name
 
-__all__ = ['Database']
+from ._constants import package_name
+from ._utils import override_dict
 
-_defaults_save_file_kwargs = dict(
-    mode="w",
-    encoding="utf-8",
-)
-_defaults_save_json_kwargs = dict(
-    sort_keys=True,
-)
+__all__ = [
+    'Database'
+]
 
 
 def _from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
@@ -32,19 +28,7 @@ def _return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
         return _values[0]
 
 
-def _override_only_unset(__dict: dict, __target: dict):
-    unset_fields = set(__target.keys()) - set(__dict.keys())
-    new_target = dict()
-    for field in unset_fields:
-        new_target[field] = __target[field]
-    new_dict = copy.deepcopy(__dict)
-    new_dict.update(new_target)
-    return new_dict
-
-
 class Database(dict):
-    __path__: str
-    __name__: str
     __data__ = 'data'
     __version__ = '1.0.0'
     __metadata__ = [
@@ -55,19 +39,15 @@ class Database(dict):
     ]
     __memory__ = dict()
 
-    def __init__(self, *arg, **kwargs):
-        self.__dict__ = dict(*arg, **kwargs)
+    def __init__(self, *arg, **kwargs) -> None:
         now = datetime.now().isoformat()
-        defaults = {
+        self.__dict__ = {
             'version': self.__version__,
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
-            # self.__data__: dict(*arg, **kwargs),
-            self.__data__: dict(),
+            self.__data__: dict(*arg, **kwargs),
         }
-        self.__dict__ = _override_only_unset(self.__dict__, defaults)
-        self.commit()
 
     def __getitem__(self, key: str) -> Any:
         try:
@@ -116,10 +96,6 @@ class Database(dict):
         return self.__dict__.get(self.__data__)
 
     @property
-    def filepath(self) -> str:
-        return self.__path__
-
-    @property
     def metadata(self) -> dict:
         meta = dict()
         for column in self.__metadata__:
@@ -137,8 +113,10 @@ class Database(dict):
         return _return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
+        """Note that this method overrides database itself.
+        """
         self._update_timestamp()
-        return self.data.update(mapping, **kwargs)
+        self.data.update(mapping, **kwargs)
 
     def modify(
         self,
@@ -170,6 +148,13 @@ class Database(dict):
         return _return_maybe(type_id, values)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
+        """
+        Args:
+            item (Union[Any, List[Any]]): Object(s) to add to database
+
+        Returns:
+            Union[str, List[str]]: Automatically generated ID of added item
+        """
         _type, _items = _from_maybe_list(item)
 
         ids = []
@@ -181,20 +166,43 @@ class Database(dict):
         self._update_timestamp()
         return _return_maybe(_type, ids)
 
-    def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
+    def remove(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
+        """
+        Args:
+            key (Union[str, List[str]]): ID(s) to remove from database
+
+        Returns:
+            Union[Any, List[Any]]: removed items
+        """
         _type, _keys = _from_maybe_list(key)
         popped = [self.data.pop(key) for key in _keys]
         self._update_timestamp()
         return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
+        """Provide all items in database.
+
+        Returns:
+            List[Any]: All items as list
+        """
         return list(self.data.values())
 
     def clear(self) -> None:
+        """Clear all items. This method updates timestamp in metadata.
+        """
         self.data.clear()
         self._update_timestamp()
 
     def find(self, func: Callable[..., bool]) -> List[str]:
+        """Returns array of IDs that satisfies the provided testing function.
+
+        Args:
+            func (Callable[..., bool]):
+                A function to execute for each items in database.
+
+        Returns:
+            List[str]: array with id of found items
+        """
         ids = []
         for id, value in self.data.items():
             if func(value):
@@ -202,6 +210,14 @@ class Database(dict):
         return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
+        """performs to determine whether has key
+
+        Args:
+            key (Union[str, List[str]]): to find with string(s) as key
+
+        Returns:
+            Union[bool, List[bool]]: boolean or array of boolean.
+        """
         _type, _keys = _from_maybe_list(key)
         key_set = set(self.data.keys())
         values = [k in key_set for k in _keys]
@@ -226,35 +242,108 @@ class Database(dict):
         return del_count
 
     def commit(self) -> None:
+        """Save its states and all items at that time.
+        """
         self.__memory__ = copy.deepcopy(self.__dict__)
 
     def rollback(self) -> None:
+        """Restore all states and items from latest commit.
+        """
         self.__dict__ = copy.deepcopy(self.__memory__)
 
-    async def save(
+    def load(
         self,
-        file_kwds: dict = dict(
+        path: str,
+        file_args: dict = dict(
+            mode="r",
+            encoding="utf-8",
+        ),
+        json_args: dict = dict()
+    ) -> 'Database':
+        """Load database object from a file
+
+        Args:
+            path (str): a string containing a file name to load.
+            file_args (dict, optional):
+                keyword arguments for file `open(**kwagrs)`.
+                Defaults to dict( mode="r", encoding="utf-8", ).
+            json_args (dict, optional):
+                keyword arguments for `json.loads(**kwargs)`.
+                Defaults to dict().
+
+        Raises:
+            AttributeError:
+                when JSON file does not contain keys and values
+                to read into valid Database object.
+
+        Returns:
+            Database: itself
+        """
+        path = os.path.abspath(path)
+        file_args = override_dict(file_args, dict(
+            mode="r",
+            encoding="utf-8",
+        ))
+        json_args = override_dict(json_args, dict())
+
+        with open(path, **file_args) as f:
+            raw = json.loads(f.read(), **json_args)
+
+        keys_in_raw = set(raw.keys())
+        field_keys = set(self.__metadata__ + [self.__data__])
+        if len(field_keys - keys_in_raw) > 0:
+            raise AttributeError('Invalid database format')
+
+        loaded_dict = {
+            'version': raw['version'],
+            'creator': raw['creator'],
+            'created_at': raw['created_at'],
+            'updated_at': raw['updated_at'],
+            self.__data__: raw[self.__data__],
+        }
+        self.__dict__ = override_dict(loaded_dict, self.__dict__)
+        return self
+
+    def save(
+        self,
+        path: str,
+        file_args: dict = dict(
             mode="w",
             encoding="utf-8",
         ),
-        json_kwds: dict = dict(
+        json_args: dict = dict(
             sort_keys=True,
-        )
+        ),
+        make_dirs: bool = False,
     ) -> None:
-        """
-        Save database into file as JSON format
+        """Save database object into a file as JSON format
 
         Args:
-            file_kwargs (dict, optional):
+            path (str): a string containing a file name to save.
+            file_args (dict, optional):
                 keyword arguments for file `open(**kwagrs)`.
-                Defaults to `(mode="w", encoding="utf-8")`.
-            json_kwargs (dict, optional):
+                Defaults to dict( mode="w+", encoding="utf-8", ).
+            json_args (dict, optional):
                 keyword arguments for `json.dumps(**kwargs)`.
-                Defaults to `(sort_keys=True)`.
+                Defaults to dict( sort_keys=True, ).
+            make_dirs (bool, optional):
+                create non-exists directories in given path.
+                Defaults to False.
         """
-        file_kwds = _override_only_unset(file_kwds, _defaults_save_file_kwargs)
-        json_kwds = _override_only_unset(json_kwds, _defaults_save_json_kwargs)
+        path = os.path.abspath(path)
+        file_args = override_dict(file_args, dict(
+            mode="w+",
+            encoding="utf-8",
+        ))
+        json_args = override_dict(json_args, dict(
+            sort_keys=True,
+        ))
 
-        async with aiofiles.open(self.filepath, **file_kwds) as f:
+        if make_dirs:
+            dirname = os.path.dirname(path)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname, exist_ok=True)
+
+        with open(path, **file_args) as f:
             dict_out = self.__exports_only_publics()
-            await f.write(json.dumps(dict_out, **json_kwds))
+            f.write(json.dumps(dict_out, **json_args))

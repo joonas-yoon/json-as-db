@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 
-from json_as_db import Client, Database
+from json_as_db import Database
 from utils import file, logger
 
 
@@ -14,32 +14,9 @@ REC_ID_2 = 'jmJKBJBAmGESC3rGbSb62T'
 REC_ID_NOT_EXIST = 'N0t3xIstKeyV41ueString'
 
 
-def setup_db() -> Database:
-    logger.debug('setup: (file) '+ DB_FILEPATH)
-
-    with open(DB_FILEPATH, 'r') as f:
-        data = json.load(f)
-
-    db = Database(data)
-    db.__path__ = DB_FILEPATH
-    db.__name__ = DB_FILENAME
-    return db
-
-
 @pytest.fixture()
 def db() -> Database:
-    yield setup_db()
-
-
-def test_read_db_attributes(db: Database):
-    record = db.get(REC_ID)
-
-    assert isinstance(record.get('list'), list)
-    assert record.get('booleanTrue') == True
-    assert record.get('booleanFalse') == False
-    assert record.get('randomInteger') == 123
-    assert record.get('randomString') == 'keyboard-cat'
-    assert record.get('not-exists-key') == None
+    return Database().load(DB_FILEPATH)
 
 
 def test_db_add(db: Database):
@@ -233,39 +210,3 @@ def test_db_commit_and_rollback(db: Database):
     assert db.get(new_id) == None
     assert updated_old == updated_rollback
 
-
-@pytest.mark.asyncio
-async def test_db_save():
-    temp_dir = os.path.join(CUR_DIR, 'test_save')
-    try:
-        file.remove(temp_dir)
-    except FileNotFoundError:
-        pass
-
-    samples = [
-        {"id": "ZoomIn", "label": "Zoom In"},
-        {"id": "ZoomOut", "label": "Zoom Out"},
-        {"id": "OriginalView", "label": "Original View"},
-    ]
-
-    client = Client(temp_dir)
-    db = client.create_database('db')
-    logger.debug(f'[before saving] {db}')
-    db.add(samples)
-    logger.debug(f'[after saving] {db}')
-
-    logger.debug(f'[saving path] {db.filepath}')
-    kwargs = {
-        'file_kwds': {'encoding': 'utf-8'},
-        'json_kwds': {'indent': 4},
-    }
-    await db.save(**kwargs)
-
-    with open(f'{temp_dir}/db.json', 'r', encoding='utf-8') as f:
-        saved = json.load(f)
-        logger.debug(f'[saved] {saved}')
-
-    saved = client.get_database('db')
-    assert saved == db
-
-    file.remove(temp_dir)
