@@ -113,8 +113,10 @@ class Database(dict):
         return _return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
+        """Note that this method overrides database itself.
+        """
         self._update_timestamp()
-        return self.data.update(mapping, **kwargs)
+        self.data.update(mapping, **kwargs)
 
     def modify(
         self,
@@ -146,6 +148,13 @@ class Database(dict):
         return _return_maybe(type_id, values)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
+        """
+        Args:
+            item (Union[Any, List[Any]]): Object(s) to add to database
+
+        Returns:
+            Union[str, List[str]]: Automatically generated ID of added item
+        """
         _type, _items = _from_maybe_list(item)
 
         ids = []
@@ -157,20 +166,43 @@ class Database(dict):
         self._update_timestamp()
         return _return_maybe(_type, ids)
 
-    def remove(self, key: Union[str, List[str]]) -> Union[str, List[str]]:
+    def remove(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
+        """
+        Args:
+            key (Union[str, List[str]]): ID(s) to remove from database
+
+        Returns:
+            Union[Any, List[Any]]: removed items
+        """
         _type, _keys = _from_maybe_list(key)
         popped = [self.data.pop(key) for key in _keys]
         self._update_timestamp()
         return _return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
+        """Provide all items in database.
+
+        Returns:
+            List[Any]: All items as list
+        """
         return list(self.data.values())
 
     def clear(self) -> None:
+        """Clear all items. This method updates timestamp in metadata.
+        """
         self.data.clear()
         self._update_timestamp()
 
     def find(self, func: Callable[..., bool]) -> List[str]:
+        """Returns array of IDs that satisfies the provided testing function.
+
+        Args:
+            func (Callable[..., bool]):
+                A function to execute for each items in database.
+
+        Returns:
+            List[str]: array with id of found items
+        """
         ids = []
         for id, value in self.data.items():
             if func(value):
@@ -178,6 +210,14 @@ class Database(dict):
         return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
+        """performs to determine whether has key
+
+        Args:
+            key (Union[str, List[str]]): to find with string(s) as key
+
+        Returns:
+            Union[bool, List[bool]]: boolean or array of boolean.
+        """
         _type, _keys = _from_maybe_list(key)
         key_set = set(self.data.keys())
         values = [k in key_set for k in _keys]
@@ -202,9 +242,13 @@ class Database(dict):
         return del_count
 
     def commit(self) -> None:
+        """Save its states and all items at that time.
+        """
         self.__memory__ = copy.deepcopy(self.__dict__)
 
     def rollback(self) -> None:
+        """Restore all states and items from latest commit.
+        """
         self.__dict__ = copy.deepcopy(self.__memory__)
 
     def load(
