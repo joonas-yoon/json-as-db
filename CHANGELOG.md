@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Thanks for getting this release out! please stay tuned :)
 
+## [0.2.0] - 2022-12-26
+
+### Added
+
+- Unit tests for getters.
+- `Database` read items from serialized JSON file.
+
+### Changed
+
+- Remove `Client`. use methods on `Database` instead of.
+
 ## [0.1.1] - 2022-12-26
 
 ### Added
@@ -36,6 +47,7 @@ Also this is not stable, so under alpha-test.
 - Set up files to being python package
 - Organized direcotries
 
-[Unreleased]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/joonas-yoon/json-as-db/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/joonas-yoon/json-as-db/releases/tag/v0.1.0
