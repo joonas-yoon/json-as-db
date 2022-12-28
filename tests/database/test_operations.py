@@ -14,25 +14,9 @@ REC_ID_2 = 'jmJKBJBAmGESC3rGbSb62T'
 REC_ID_NOT_EXIST = 'N0t3xIstKeyV41ueString'
 
 
-def setup_db() -> Database:
-    logger.debug('setup: (file) '+ DB_FILEPATH)
-    return Database().load(DB_FILEPATH)
-
-
 @pytest.fixture()
 def db() -> Database:
-    yield setup_db()
-
-
-def test_db_metadata(db: Database):
-    record = db.get(REC_ID)
-
-    assert isinstance(record.get('list'), list)
-    assert record.get('booleanTrue') == True
-    assert record.get('booleanFalse') == False
-    assert record.get('randomInteger') == 123
-    assert record.get('randomString') == 'keyboard-cat'
-    assert record.get('not-exists-key') == None
+    return Database().load(DB_FILEPATH)
 
 
 def test_db_add(db: Database):
