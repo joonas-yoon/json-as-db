@@ -7,7 +7,7 @@ from utils import file, logger
 
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-DB_FILENAME = 'basic.json'
+DB_FILENAME = 'db.json'
 DB_FILEPATH = os.path.join(CUR_DIR, '..', 'samples', DB_FILENAME)
 REC_ID = 'kcbPuqpfV3YSHT8YbECjvh'
 REC_ID_2 = 'jmJKBJBAmGESC3rGbSb62T'
