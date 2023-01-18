@@ -1,0 +1,18 @@
+[
+  {
+    "randomInteger": 123,
+    "randomString": "keyboard-cat",
+    "booleanTrue": true,
+    "booleanFalse": false,
+    "empty": null,
+    "list": [
+      "first element"
+    ]
+  }, {
+    "randomInteger": 321,
+    "randomString": "cheshire-cat",
+    "list": [
+      "alice", "in", "wonderland"
+    ]
+  }
+]

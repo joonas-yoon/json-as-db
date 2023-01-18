@@ -7,8 +7,9 @@ from utils import file, logger
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def test_db_load() -> Database:
-    filepath = os.path.join(CUR_DIR, '..', 'samples', 'basic.json')
+def test_db_load():
+    filepath = os.path.join(CUR_DIR, '..', 'samples', 'db.json')
+    filepath = os.path.abspath(filepath)
     logger.debug('setup: (file) '+ filepath)
 
     db = Database().load(filepath)
@@ -25,6 +26,48 @@ def test_db_load() -> Database:
 
     assert item_expected == item
 
+
+def test_db_load_from_list_json():
+    filepath = os.path.join(CUR_DIR, '..', 'samples', 'list.json')
+    filepath = os.path.abspath(filepath)
+    logger.debug('setup: (file) '+ filepath)
+
+    db = Database().load(filepath)
+    logger.debug(db)
+    assert len(db) == 2
+
+    keys = list(db.keys())
+    assert len(keys) == 2
+
+    item1 = db.get(keys[0])
+    item2 = db.get(keys[1])
+
+    logger.debug(f"db['{keys[0]}'] = {item1}")
+    logger.debug(f"db['{keys[1]}'] = {item2}")
+
+    if 'empty' in item1:
+        assert item1["randomInteger"] == 123
+        assert item2["randomInteger"] == 321
+    else:
+        assert item1["randomInteger"] == 321
+        assert item2["randomInteger"] == 123
+
+
+def test_db_load_from_json():
+    filepath = os.path.join(CUR_DIR, '..', 'samples', 'sample1.json')
+    filepath = os.path.abspath(filepath)
+    logger.debug('setup: (file) '+ filepath)
+
+    db = Database().load(filepath)
+    assert len(db) == 1
+
+    items = db.all()
+    item = items[0]
+    assert type(item) is dict
+
+    assert 'someExtraKey' in item
+    assert item['someExtraKey'] == 989347
+    assert len(item['items']) == 2
 
 
 def test_db_save():
@@ -47,6 +90,7 @@ def test_db_save():
     logger.debug(f'[after adding items] {db}')
 
     filepath = os.path.join(temp_dir, 'db.json')
+    filepath = os.path.abspath(filepath)
     logger.debug(f'[saving path] {filepath}')
     kwargs = {
         'file_args': {'encoding': 'utf-8'},

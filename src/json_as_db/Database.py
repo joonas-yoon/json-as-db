@@ -40,13 +40,19 @@ class Database(dict):
     __memory__ = dict()
 
     def __init__(self, *arg, **kwargs) -> None:
+        self.__dict__ = self._create_empty()
+        self.__dict__.update({
+            self.__data__: dict(*arg, **kwargs),
+        })
+
+    def _create_empty(self) -> dict:
         now = datetime.now().isoformat()
-        self.__dict__ = {
+        return {
             'version': self.__version__,
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
-            self.__data__: dict(*arg, **kwargs),
+            self.__data__: dict(),
         }
 
     def __getitem__(self, key: str) -> Any:
@@ -289,20 +295,28 @@ class Database(dict):
         with open(path, **file_args) as f:
             raw = json.loads(f.read(), **json_args)
 
-        keys_in_raw = set(raw.keys())
-        field_keys = set(self.__metadata__ + [self.__data__])
-        if len(field_keys - keys_in_raw) > 0:
-            raise AttributeError('Invalid database format')
-
-        loaded_dict = {
-            'version': raw['version'],
-            'creator': raw['creator'],
-            'created_at': raw['created_at'],
-            'updated_at': raw['updated_at'],
-            self.__data__: raw[self.__data__],
-        }
-        self.__dict__ = override_dict(loaded_dict, self.__dict__)
+        self._create(raw)
         return self
+
+    def _create(self, raw: Union[dict, list]) -> None:
+        self.__dict__ = self._create_empty()
+
+        if type(raw) == dict:
+            keys_in_raw = set(raw.keys())
+            field_keys = set(self.__metadata__ + [self.__data__])
+            is_fields_valid = len(field_keys - keys_in_raw) == 0
+            if is_fields_valid:
+                self.__dict__.update({
+                    'version': raw['version'],
+                    'creator': raw['creator'],
+                    'created_at': raw['created_at'],
+                    'updated_at': raw['updated_at'],
+                    self.__data__: raw[self.__data__],
+                })
+            else:
+                self.add(raw)
+        elif type(raw) == list:
+            self.add(raw)
 
     def save(
         self,
