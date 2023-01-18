@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "json_as_db"
-version = "0.2.2"
+version = "0.2.3"
 description = "Using JSON as very lightweight database"
 readme = "README.md"
 license = "MIT"
-keywords = ["json", "lightweight", "database"]
+keywords = ["json", "lightweight", "database", "odm"]
 authors = [
   "Joonas <joonas.yoon@gmail.com>"
 ]
@@ -12,7 +12,7 @@ maintainers = [
   "Joonas <joonas.yoon@gmail.com>"
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",

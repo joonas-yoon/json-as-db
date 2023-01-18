@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Thanks for getting this release out! please stay tuned :)
 
-## [0.2.0] - 2022-12-26
+## [0.2.3] - 2023-01-18
+
+### Added
+
+- Supports to load database from JSON file that doesn't made from `Database`.
+
+## [0.2.2] - 2022-12-26
 
 ### Added
 
