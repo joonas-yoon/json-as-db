@@ -6,8 +6,10 @@ import shortuuid
 from datetime import datetime
 from typing import Any, Union, List, Callable, Tuple
 
+
 from ._constants import package_name
 from ._utils import override_dict
+from .Condition import Condition
 
 __all__ = [
     'Database'
