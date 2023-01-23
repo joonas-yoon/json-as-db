@@ -152,15 +152,15 @@ def test_db_clear(db: Database):
 
 
 def test_db_find(db: Database):
-    result = db.find(lambda x: True)
+    result = db.find(lambda _, v: True)
     assert len(result) == db.count()
-    found = db.find(lambda x: x['randomInteger'] == 123)
+    found = db.find(lambda _, item: item['randomInteger'] == 123)
     assert found == [REC_ID]
-    found = db.find(lambda x: 'alice' in x['list'])
+    found = db.find(lambda _, item: 'alice' in item['list'])
     assert found == [REC_ID_2]
-    found = db.find(lambda x: False)
+    found = db.find(lambda _, v: False)
     assert found == []
-    found = db.find(lambda x: x['randomString'].endswith('cat'))
+    found = db.find(lambda _, item: item['randomString'].endswith('cat'))
     assert len(found) == 2
     assert set(found) == set([REC_ID, REC_ID_2])
 
