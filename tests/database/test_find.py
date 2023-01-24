@@ -157,3 +157,35 @@ def test_db_find_with_condition_and_and(db: Database):
     result = db.find(condition1 & condition2 & condition3)
     logger.debug(result)
     assert len(result) == 0
+
+
+def test_db_find_with_condition_and_or(db: Database):
+    condition1: Condition = Key('randomInteger') == 123
+    condition2: Condition = Key('randomString') == 'keyboard-cat'
+    condition3: Condition = Key('booleanFalse') == None
+    logger.debug(condition1 & condition2 | condition3)
+    result = db.find(condition1 & condition2 | condition3)
+    logger.debug(result)
+    assert len(result) == 1
+
+    variant = db.find((condition1 & condition2) | condition3)
+    assert variant == result
+
+    variant = db.find(condition2 & condition1 | condition3)
+    assert variant == result
+
+
+def test_db_find_with_condition_non_exists(db: Database):
+    condition: Condition = Key('empty') == None
+    logger.debug(condition)
+    result = db.find(condition)
+    logger.debug(result)
+    assert len(result) == 1
+
+
+def test_db_find_with_condition_not(db: Database):
+    condition: Condition = Key('empty') == None
+    logger.debug(condition)
+    result = db.find(~condition)
+    logger.debug(result)
+    assert len(result) == 0
