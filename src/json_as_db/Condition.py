@@ -14,8 +14,6 @@ class Operator(Enum):
 
 
 def _compare(a: Any, b: Any, op: Operator):
-    if a == None or b == None:
-        return False
     if op is Operator.LESS_THAN:
         return a < b
     elif op is Operator.LESS_EQUAL:
@@ -29,9 +27,13 @@ def _compare(a: Any, b: Any, op: Operator):
     elif op is Operator.GREATER_EQUAL:
         return a >= b
     elif op is Operator.AND:
-        return a & b
+        if a != None and b != None:
+            return a & b
+        return False
     elif op is Operator.OR:
-        return a | b
+        if a != None and b != None:
+            return a | b
+        return False
     else:
         raise NotImplementedError()
 
