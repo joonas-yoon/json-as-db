@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Any, List, Callable, Union
 
-
 class Operator(Enum):
     LESS_THAN = '<'
     LESS_EQUAL = '<='
@@ -59,7 +58,15 @@ def _invert_operator(op: Operator):
         raise NotImplementedError()
 
 
-class Condition:
+class Comparator:
+    def __call__(self, item: dict) -> bool:
+        return self.evaluate(item)
+
+    def evaluate(self, other: dict) -> bool:
+        pass
+
+
+class Condition(Comparator):
     key: str
     value: Any
     operator: Operator
@@ -76,9 +83,6 @@ class Condition:
             f"value={repr(self.value)}",
         ]
         return f"Condition({', '.join(s)})"
-
-    def __call__(self, item: dict) -> bool:
-        return self._evaluate_by_key(item)
 
     def copy(self) -> 'Condition':
         return Condition(key=self.key, value=self.value, operator=self.operator)
@@ -100,17 +104,14 @@ class Condition:
     def __ror__(self, other: 'Condition') -> 'Conditions':
         return Conditions(lvalue=other, rvalue=self, operator=Operator.OR)
 
-    def _evaluate_by_key(self, item: dict) -> bool:
+    def evaluate(self, item: dict) -> bool:
         key = str(self.key)
         if not key in item:
             return None
-        return self.evaluate(item[key])
-
-    def evaluate(self, other: Any) -> bool:
-        return _compare(other, self.value, self.operator)
+        return _compare(item[key], self.value, self.operator)
 
 
-class Conditions:
+class Conditions(Comparator):
     _left: Union[Condition, 'Conditions']
     _right: Union[Condition, 'Conditions']
     _oper: Operator
@@ -128,9 +129,6 @@ class Conditions:
     def evaluate(self, other: dict) -> bool:
         l, r, op = self._left, self._right, self._oper
         return _compare(l(other), r(other), op)
-
-    def __call__(self, item: dict) -> bool:
-        return self.evaluate(item)
 
     def copy(self) -> 'Conditions':
         return Conditions(
