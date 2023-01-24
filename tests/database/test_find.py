@@ -4,8 +4,7 @@ import pytest
 
 from utils import file, logger
 
-from json_as_db import Database, Condition
-from json_as_db.Condition import Key
+from json_as_db import Database, Condition, Key
 
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
