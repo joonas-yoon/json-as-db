@@ -4,30 +4,14 @@ import copy
 import shortuuid
 
 from datetime import datetime
-from typing import Any, Union, List, Callable, Tuple
-
+from typing import Any, Union, List, Callable
 
 from ._constants import package_name
-from ._utils import override_dict
-from .Condition import Condition
+from ._utils import override_dict, from_maybe_list, return_maybe
 
 __all__ = [
     'Database'
 ]
-
-
-def _from_maybe_list(value: Union[Any, List[Any]]) -> Tuple[type, List[Any]]:
-    return_type = type(value)
-    if not isinstance(value, list):
-        value = [value]
-    return (return_type, value)
-
-
-def _return_maybe(_type: type, _values: List[Any]) -> Union[Any, List[Any]]:
-    if _type is list:
-        return _values
-    else:
-        return _values[0]
 
 
 class Database(dict):
@@ -116,9 +100,9 @@ class Database(dict):
         })
 
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
-        _type, _keys = _from_maybe_list(key)
+        _type, _keys = from_maybe_list(key)
         values = [self.data.get(k, default) for k in _keys]
-        return _return_maybe(_type, values)
+        return return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
         """Note that this method overrides database itself.
@@ -142,8 +126,8 @@ class Database(dict):
         Returns:
             Any | List[Any]: Modified value(s)
         """
-        type_id, ids = _from_maybe_list(id)
-        type_value, values = _from_maybe_list(value)
+        type_id, ids = from_maybe_list(id)
+        type_value, values = from_maybe_list(value)
         if len(ids) != len(values):
             raise ValueError(
                 'Can not match ids and values. please check type and length of them')
@@ -153,7 +137,7 @@ class Database(dict):
             target[_id] = _value
             self.data.update(target)
         self._update_timestamp()
-        return _return_maybe(type_id, values)
+        return return_maybe(type_id, values)
 
     def add(self, item: Union[Any, List[Any]]) -> Union[str, List[str]]:
         """
@@ -163,7 +147,7 @@ class Database(dict):
         Returns:
             Union[str, List[str]]: Automatically generated ID of added item
         """
-        _type, _items = _from_maybe_list(item)
+        _type, _items = from_maybe_list(item)
 
         ids = []
         for i in _items:
@@ -172,7 +156,7 @@ class Database(dict):
             ids.append(uid)
 
         self._update_timestamp()
-        return _return_maybe(_type, ids)
+        return return_maybe(_type, ids)
 
     def remove(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
         """
@@ -182,10 +166,10 @@ class Database(dict):
         Returns:
             Union[Any, List[Any]]: removed items
         """
-        _type, _keys = _from_maybe_list(key)
+        _type, _keys = from_maybe_list(key)
         popped = [self.data.pop(key) for key in _keys]
         self._update_timestamp()
-        return _return_maybe(_type, popped)
+        return return_maybe(_type, popped)
 
     def all(self) -> List[Any]:
         """Provide all items in database.
@@ -228,10 +212,10 @@ class Database(dict):
         Returns:
             Union[bool, List[bool]]: boolean or array of boolean.
         """
-        _type, _keys = _from_maybe_list(key)
+        _type, _keys = from_maybe_list(key)
         key_set = set(self.data.keys())
         values = [k in key_set for k in _keys]
-        return _return_maybe(_type, values)
+        return return_maybe(_type, values)
 
     def count(self) -> int:
         """
