@@ -6,8 +6,8 @@ import shortuuid
 from datetime import datetime
 from typing import Any, Union, List, Callable
 
-from ._constants import package_name
-from ._utils import override_dict, from_maybe_list, return_maybe
+from ..constants import package_name
+from .._utils import override_dict, from_maybe_list, return_maybe
 
 __all__ = [
     'Database'
