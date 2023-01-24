@@ -116,3 +116,44 @@ def test_db_find_with_condition_greater_than_equal(db: Database):
     result = db.find(condition)
     found = db.get(result[0])
     assert found['randomInteger'] == 321
+
+
+def test_db_find_with_condition_non_exist_key(db: Database):
+    condition: Condition = Key('nonExistKey') == 'nothing'
+    logger.debug(condition)
+    result = db.find(condition)
+    assert len(result) == 0
+
+
+def test_db_find_with_condition_and(db: Database):
+    condition1: Condition = Key('randomInteger') >= 123
+    condition2: Condition = Key('randomInteger') <= 321
+    logger.debug(condition1 & condition2)
+    result = db.find(condition1 & condition2)
+    assert len(result) == 2
+
+
+def test_db_find_with_condition_or(db: Database):
+    condition1: Condition = Key('randomInteger') == 123
+    condition2: Condition = Key('randomString') == 'cheshire-cat'
+    logger.debug(condition1 | condition2)
+    result = db.find(condition1 | condition2)
+    assert len(result) == 2
+
+    condition1: Condition = Key('randomInteger') == 321
+    condition2: Condition = Key('randomString') == 'cheshire-cat'
+    logger.debug(condition1 | condition2)
+    result = db.find(condition1 | condition2)
+    assert len(result) == 1
+    found = db.get(result[0])
+    assert found['randomInteger'] == 321
+
+
+def test_db_find_with_condition_and_and(db: Database):
+    condition1: Condition = Key('randomInteger') == 123
+    condition2: Condition = Key('randomString') == 'cheshire-cat'
+    condition3: Condition = Key('booleanFalse') == False
+    logger.debug(condition1 & condition2 & condition3)
+    result = db.find(condition1 & condition2 & condition3)
+    logger.debug(result)
+    assert len(result) == 0
