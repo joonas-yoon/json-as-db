@@ -22,15 +22,15 @@ def db() -> Database:
 
 
 def test_db_find_with_lambda(db: Database):
-    result = db.find(lambda _, v: True)
+    result = db.find(lambda v: True)
     assert len(result) == db.count()
-    found = db.find(lambda _, item: item['randomInteger'] == 123)
+    found = db.find(lambda item: item['randomInteger'] == 123)
     assert found == [REC_ID]
-    found = db.find(lambda _, item: 'alice' in item['list'])
+    found = db.find(lambda item: 'alice' in item['list'])
     assert found == [REC_ID_2]
-    found = db.find(lambda _, v: False)
+    found = db.find(lambda v: False)
     assert found == []
-    found = db.find(lambda _, item: item['randomString'].endswith('cat'))
+    found = db.find(lambda item: item['randomString'].endswith('cat'))
     assert len(found) == 2
     assert set(found) == set([REC_ID, REC_ID_2])
 
