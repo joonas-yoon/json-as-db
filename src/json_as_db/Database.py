@@ -207,16 +207,16 @@ class Database(dict):
         Args:
             func (Callable[..., bool]):
                 A function to execute for each items in database.
-                It will call `func(id, value)` to determine boolean.
+                It will call `func(value)` to determine boolean.
 
         Returns:
             List[str]: array with id of found items
         """
         ids = []
-        for _id, value in self.data.items():
-            found = func(_id, value)
+        for object_id, value in self.data.items():
+            found = func(value)
             if found:
-                ids.append(_id)
+                ids.append(object_id)
         return ids
 
     def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:

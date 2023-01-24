@@ -75,7 +75,7 @@ class Condition:
         ]
         return f"Condition({', '.join(s)})"
 
-    def __call__(self, obj_id: str, item: dict) -> bool:
+    def __call__(self, item: dict) -> bool:
         return self._evaluate_by_key(item)
 
     def copy(self) -> 'Condition':
@@ -125,9 +125,9 @@ class Conditions:
 
     def evaluate(self, other: dict) -> bool:
         l, r, op = self._left, self._right, self._oper
-        return _compare(l('', other), r('', other), op)
+        return _compare(l(other), r(other), op)
 
-    def __call__(self, obj_id: str, item: dict) -> bool:
+    def __call__(self, item: dict) -> bool:
         return self.evaluate(item)
 
     def copy(self) -> 'Conditions':
