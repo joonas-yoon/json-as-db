@@ -1,61 +1,10 @@
-from enum import Enum
-from typing import Any, List, Callable, Union
+from typing import Any, Union
 
-class Operator(Enum):
-    LESS_THAN = '<'
-    LESS_EQUAL = '<='
-    EQUAL = '=='
-    NOT_EQUAL = '!='
-    GREATER_THAN = '>'
-    GREATER_EQUAL = '>='
-    AND = '&'
-    OR = '|'
-
-
-def _compare(a: Any, b: Any, op: Operator):
-    if op is Operator.LESS_THAN:
-        return a < b
-    elif op is Operator.LESS_EQUAL:
-        return a <= b
-    elif op is Operator.EQUAL:
-        return a == b
-    elif op is Operator.NOT_EQUAL:
-        return a != b
-    elif op is Operator.GREATER_THAN:
-        return a > b
-    elif op is Operator.GREATER_EQUAL:
-        return a >= b
-    elif op is Operator.AND:
-        if a != None and b != None:
-            return a & b
-        return False
-    elif op is Operator.OR:
-        if a != None and b != None:
-            return a | b
-        return False
-    else:
-        raise NotImplementedError()
-
-
-def _invert_operator(op: Operator):
-    if op is Operator.LESS_THAN:       # <
-        return Operator.GREATER_EQUAL  # ~(<) is (>=)
-    elif op is Operator.LESS_EQUAL:    # <=
-        return Operator.GREATER_THAN   # ~(<=) is (>)
-    elif op is Operator.EQUAL:         # ==
-        return Operator.NOT_EQUAL      # ~(==) is (!=)
-    elif op is Operator.NOT_EQUAL:     # !=
-        return Operator.EQUAL          # ~(!=) is (==)
-    elif op is Operator.GREATER_THAN:  # >
-        return Operator.LESS_EQUAL     # ~(>) is (<=)
-    elif op is Operator.GREATER_EQUAL: # >=
-        return Operator.LESS_THAN      # ~(>=) is (<)
-    elif op is Operator.AND:           # and
-        return Operator.OR             # ~(and) is (or)
-    elif op is Operator.OR:            # or
-        return Operator.AND            # ~(or) is (and)
-    else:
-        raise NotImplementedError()
+from .operator import (
+    Operator,
+    compare,
+    invert_operator
+)
 
 
 class Comparator:
@@ -89,7 +38,7 @@ class Condition(Comparator):
 
     def __invert__(self) -> 'Condition':
         copy = self.copy()
-        copy.operator = _invert_operator(self.operator)
+        copy.operator = invert_operator(self.operator)
         return copy
 
     def __and__(self, other: 'Condition') -> 'Conditions':
@@ -108,7 +57,7 @@ class Condition(Comparator):
         key = str(self.key)
         if not key in item:
             return None
-        return _compare(item[key], self.value, self.operator)
+        return compare(item[key], self.value, self.operator)
 
 
 class Conditions(Comparator):
@@ -128,7 +77,7 @@ class Conditions(Comparator):
 
     def evaluate(self, other: dict) -> bool:
         l, r, op = self._left, self._right, self._oper
-        return _compare(l(other), r(other), op)
+        return compare(l(other), r(other), op)
 
     def copy(self) -> 'Conditions':
         return Conditions(
@@ -142,7 +91,7 @@ class Conditions(Comparator):
         For example, when you call `~(a & b)` it means `not (a and b)`.
         """
         inst = self.copy()
-        inst._oper = _invert_operator(inst._oper)
+        inst._oper = invert_operator(inst._oper)
         return inst
 
     def invert(self) -> 'Conditions':
@@ -153,7 +102,7 @@ class Conditions(Comparator):
         return Conditions(
             lvalue=~self._left,
             rvalue=~self._right,
-            operator=_invert_operator(self._oper),
+            operator=invert_operator(self._oper),
         )
 
     def __and__(self, other: Union[Condition, 'Conditions']) -> 'Conditions':

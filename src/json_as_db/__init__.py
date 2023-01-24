@@ -1,5 +1,5 @@
-from .Condition import Condition, Conditions, Key
-from .Database import Database
+from .core.database import Database
+from .core.matcher import Condition, Conditions, Key
 
 __version__ = '0.2.4'
 
