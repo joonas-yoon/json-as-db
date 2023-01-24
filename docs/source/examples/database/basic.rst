@@ -111,12 +111,29 @@ Multiple items
 Find
 ^^^^
 
+You can find objects with passing lambda function to handle each items. For example:
+
 .. code-block:: python
 
     >>> db.find(lambda x: x['type'].endswith('e'))
     ['2g4kaFAiDBPchz66HNPsZa', 'dpKsCc7evmV7Mxq8ikgY89', 'fewugXnJHosmaXeqbXrLtD']
     >>> db.get(['2g4kaFAiDBPchz66HNPsZa', 'dpKsCc7evmV7Mxq8ikgY89', 'fewugXnJHosmaXeqbXrLtD'])
     [{'id': 1001, 'type': 'Chocolate'}, {'id': 1002, 'type': 'Orange'}, {'id': 1003, 'type': 'Apple'}]
+
+Also we provide flexible wrappers for `==`, `!=`, `<`, `<=`, `>`, `>=` to comparison operators.
+
+.. code-block:: python
+
+    >>> from json_as_db import Key
+    >>> db = Database()
+    >>> db.add([{'product': 'Chocolate', 'amount': 10}, {'product': 'Orange', 'amount': 1}, {'product': 'Apple', 'amount': 3}])
+    ['oTTno3xwizirjM6skVrZsi', 'Gw9pwyeV6cXJbHkT3sSUaW', 'LVw4smsL9WRgtRo5bTSnuX']
+    >>> db.find(Key('type') == 'Chocolate')
+    ['oTTno3xwizirjM6skVrZsi']
+    >>> db.find(Key('product') > 'Apple')
+    ['oTTno3xwizirjM6skVrZsi', 'Gw9pwyeV6cXJbHkT3sSUaW']
+    >>> db.find(Key('amount') <= 3)
+    ['Gw9pwyeV6cXJbHkT3sSUaW', 'LVw4smsL9WRgtRo5bTSnuX']
 
 
 Commit & Rollback

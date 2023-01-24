@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Supports to find by key and value with `Condition` that is generated from `Key`.
+
 Thanks for getting this release out! please stay tuned :)
 
 ## [0.2.3] - 2023-01-18
