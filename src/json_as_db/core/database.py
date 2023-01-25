@@ -103,6 +103,24 @@ class Database(dict):
         })
 
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
+        """Get objects by given IDs when list is given.
+        When single string is given, returns single object by given key
+
+        Args:
+            key (str | List[str]): single key or list-like
+            default (Any, optional): default value if not exists. Defaults to None.
+
+        Returns:
+            Any | List[Any]: single object or list-like
+
+        Examples:
+            >>> db.get('kcbPuqpfV3YSHT8YbECjvh')
+            {...}
+            >>> db.get(['kcbPuqpfV3YSHT8YbECjvh'])
+            [{...}]
+            >>> db.get(['kcbPuqpfV3YSHT8YbECjvh', 'jmJKBJBAmGESC3rGbSb62T'])
+            [{...}, {...}]
+        """
         _type, _keys = from_maybe_list(key)
         values = [self.data.get(k, default) for k in _keys]
         return return_maybe(_type, values)
