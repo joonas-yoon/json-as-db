@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Supports to find by key and value with `Condition` that is generated from `Key`.
+- Implements useful representation for quickly displaying as a table format.
+
+### Fixed
+
+- Implements `items()` methods to override dictionary on `Database` class.
 
 Thanks for getting this release out! please stay tuned :)
 
