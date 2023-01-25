@@ -4,7 +4,7 @@ import copy
 import shortuuid
 
 from datetime import datetime
-from typing import Any, Union, List, Callable
+from typing import Any, Union, List, Callable, Optional
 
 from ..constants import package_name, __version__
 from .._utils import override_dict, from_maybe_list, return_maybe, decorater
@@ -13,6 +13,52 @@ from ._formatting import stringify
 __all__ = [
     'Database'
 ]
+
+
+class ShortKeyMap:
+    map = dict()
+
+    def __init__(self, d: dict = dict()) -> None:
+        self.add_many(list(d.keys()))
+
+    def add(self, key: str):
+        key6: str = ShortKeyMap.safe_short(key)
+        if not key6 in self.map:
+            self.map[key6] = []
+        self.map[key6].append(key)
+
+    def add_many(self, keys: List[str]):
+        for key in keys:
+            self.add(key)
+
+    def safe_short(key: str) -> str:
+        return key[:6] if key else ''
+
+    def __getitem__(self, short_key: str) -> Optional[str]:
+        if len(short_key) < 6:
+            raise KeyError('key must be at least 6 chars.')
+        key6 = ShortKeyMap.safe_short(short_key)
+        keys: List[str] = self.map[key6] if key6 in self.map else []
+        length = len(keys)
+        if length == 0:
+            return None
+        elif length == 1:
+            return keys[0]
+        for key_full in keys:
+            if key_full.startswith(short_key):
+                return key_full
+        return None
+
+    def remove(self, key: str):
+        key6: str = ShortKeyMap.safe_short(key)
+        if not key6 in self.map:
+            return
+        self.map[key6].remove(key)
+        if len(self.map[key6]) == 0:
+            self.map.pop(key6)
+
+    def clear(self):
+        self.map.clear()
 
 
 class Database(dict):
@@ -24,12 +70,14 @@ class Database(dict):
         'updated_at',
     ]
     __memory__ = dict()
+    __id_index__: ShortKeyMap = ShortKeyMap()
 
     def __init__(self, *arg, **kwargs) -> None:
         self.__dict__ = self._create_empty()
         self.__dict__.update({
             self.__data__: dict(*arg, **kwargs),
         })
+        self.__id_index__ = ShortKeyMap(self.__dict__[self.__data__])
 
     def _create_empty(self) -> dict:
         now = datetime.now().isoformat()
@@ -42,6 +90,7 @@ class Database(dict):
         }
 
     def __getitem__(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
+        key = self._get_full_keys(key)
         return self.get(key)
 
     def __setitem__(self, key, value) -> None:
@@ -50,11 +99,14 @@ class Database(dict):
     def __delitem__(self, key) -> None:
         try:
             self._update_timestamp()
+            key = self._get_full_keys(key)
+            self.__id_index__.remove(key)
             return self.data.__delitem__(key)
         except KeyError:
             return None
 
     def __contains__(self, key, **kwargs) -> bool:
+        key = self._get_full_keys(key)
         return self.data.__contains__(key, **kwargs)
 
     def __exports_only_publics(self) -> dict:
@@ -105,7 +157,12 @@ class Database(dict):
             'updated_at': datetime.now().isoformat()
         })
 
-    def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
+    def _get_full_keys(self, _id: Union[str, List[str]]) -> Union[str, List[str]]:
+        _type, _keys = from_maybe_list(_id)
+        values = list(map(lambda k: self.__id_index__[k] if k else None, _keys))
+        return return_maybe(_type, values)
+
+    def get(self, id: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
         """Get objects by given IDs when list is given.
         When single string is given, returns single object by given key
 
@@ -124,8 +181,8 @@ class Database(dict):
             >>> db.get(['kcbPuqpfV3YSHT8YbECjvh', 'jmJKBJBAmGESC3rGbSb62T'])
             [{...}, {...}]
         """
-        _type, _keys = from_maybe_list(key)
-        values = [self.data.get(k, default) for k in _keys]
+        _type, _keys = from_maybe_list(id)
+        values = [self.data.get(k, default) for k in self._get_full_keys(_keys)]
         return return_maybe(_type, values)
 
     def update(self, mapping: Union[dict, tuple] = (), **kwargs) -> None:
@@ -155,6 +212,7 @@ class Database(dict):
         if len(ids) != len(values):
             raise ValueError(
                 'Can not match ids and values. please check type and length of them')
+        ids = self._get_full_keys(ids)
         for index in range(len(ids)):
             _id, _value = ids[index], values[index]
             target = dict()
@@ -178,6 +236,7 @@ class Database(dict):
             uid = shortuuid.uuid()
             self.data[uid] = i
             ids.append(uid)
+            self.__id_index__.add(uid)
 
         self._update_timestamp()
         return return_maybe(_type, ids)
@@ -191,7 +250,11 @@ class Database(dict):
             Union[Any, List[Any]]: removed items
         """
         _type, _keys = from_maybe_list(key)
-        popped = [self.data.pop(key) for key in _keys]
+        _keys = self._get_full_keys(_keys)
+        popped = []
+        for key in _keys:
+            self.__id_index__.remove(key)
+            popped.append(self.data.pop(key))
         self._update_timestamp()
         return return_maybe(_type, popped)
 
@@ -207,6 +270,7 @@ class Database(dict):
         """Clear all items. This method updates timestamp in metadata.
         """
         self.data.clear()
+        self.__id_index__.clear()
         self._update_timestamp()
 
     def find(self, func: Callable[..., bool]) -> List[str]:
@@ -227,7 +291,7 @@ class Database(dict):
                 ids.append(object_id)
         return ids
 
-    def has(self, key: Union[str, List[str]]) -> Union[bool, List[bool]]:
+    def has(self, id: Union[str, List[str]]) -> Union[bool, List[bool]]:
         """performs to determine whether has key
 
         Args:
@@ -236,7 +300,8 @@ class Database(dict):
         Returns:
             Union[bool, List[bool]]: boolean or array of boolean.
         """
-        _type, _keys = from_maybe_list(key)
+        _type, _keys = from_maybe_list(id)
+        _keys = self._get_full_keys(_keys)
         key_set = set(self.data.keys())
         values = [k in key_set for k in _keys]
         return return_maybe(_type, values)
@@ -256,7 +321,7 @@ class Database(dict):
             int: indicates the count of dropped items
         """
         del_count = self.count()
-        self.data.clear()
+        self.clear()
         return del_count
 
     def commit(self) -> None:
@@ -268,6 +333,7 @@ class Database(dict):
         """Restore all states and items from latest commit.
         """
         self.__dict__ = copy.deepcopy(self.__memory__)
+        self.__id_index__ = ShortKeyMap(self.__dict__[self.__data__])
 
     def load(
         self,
@@ -312,6 +378,7 @@ class Database(dict):
 
     def _create(self, raw: Union[dict, list]) -> None:
         self.__dict__ = self._create_empty()
+        self.__id_index__ = ShortKeyMap()
 
         if type(raw) == dict:
             keys_in_raw = set(raw.keys())
@@ -325,6 +392,7 @@ class Database(dict):
                     'updated_at': raw['updated_at'],
                     self.__data__: raw[self.__data__],
                 })
+                self.__id_index__ = ShortKeyMap(self.__dict__[self.__data__])
             else:
                 self.add(raw)
         elif type(raw) == list:
