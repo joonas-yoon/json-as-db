@@ -6,8 +6,9 @@ import shortuuid
 from datetime import datetime
 from typing import Any, Union, List, Callable
 
-from ..constants import package_name
-from .._utils import override_dict, from_maybe_list, return_maybe
+from ..constants import package_name, __version__
+from .._utils import override_dict, from_maybe_list, return_maybe, decorater
+from ._formatting import stringify
 
 __all__ = [
     'Database'
@@ -16,7 +17,6 @@ __all__ = [
 
 class Database(dict):
     __data__ = 'data'
-    __version__ = '1.0.0'
     __metadata__ = [
         'version',
         'creator',
@@ -34,18 +34,15 @@ class Database(dict):
     def _create_empty(self) -> dict:
         now = datetime.now().isoformat()
         return {
-            'version': self.__version__,
+            'version': __version__,
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
             self.__data__: dict(),
         }
 
-    def __getitem__(self, key: str) -> Any:
-        try:
-            return self.data.__getitem__(key)
-        except KeyError:
-            return None
+    def __getitem__(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
+        return self.get(key)
 
     def __setitem__(self, key, value) -> None:
         raise NotImplementedError('Can not set attributes directly')
@@ -68,20 +65,29 @@ class Database(dict):
             out.pop(key)
         return out
 
-    def __repr__(self):
-        return self.__exports_only_publics().__repr__()
+    @decorater.copy_doc(stringify)
+    def __repr__(self) -> str:
+        return stringify(list(self.data.values()))
 
-    def __str__(self):
+    @decorater.copy_doc(stringify)
+    def __str__(self) -> str:
         return str(self.__repr__())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
     def keys(self) -> list:
         return self.data.keys()
 
+    def items(self) -> list:
+        return self.data.items()
+
     def values(self) -> list:
         return self.data.values()
+
+    @property
+    def version(self) -> str:
+        return self.__dict__.get('version')
 
     @property
     def data(self) -> dict:
@@ -100,6 +106,24 @@ class Database(dict):
         })
 
     def get(self, key: Union[str, List[str]], default=None) -> Union[Any, List[Any]]:
+        """Get objects by given IDs when list is given.
+        When single string is given, returns single object by given key
+
+        Args:
+            key (str | List[str]): single key or list-like
+            default (Any, optional): default value if not exists. Defaults to None.
+
+        Returns:
+            Any | List[Any]: single object or list-like
+
+        Examples:
+            >>> db.get('kcbPuqpfV3YSHT8YbECjvh')
+            {...}
+            >>> db.get(['kcbPuqpfV3YSHT8YbECjvh'])
+            [{...}]
+            >>> db.get(['kcbPuqpfV3YSHT8YbECjvh', 'jmJKBJBAmGESC3rGbSb62T'])
+            [{...}, {...}]
+        """
         _type, _keys = from_maybe_list(key)
         values = [self.data.get(k, default) for k in _keys]
         return return_maybe(_type, values)

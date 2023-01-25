@@ -10,4 +10,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 
-__all__ = ['logger', 'file', 'string']
+def fail():
+    assert False
+
+__all__ = ['logger', 'file', 'string', 'fail']

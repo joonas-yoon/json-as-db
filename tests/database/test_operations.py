@@ -19,7 +19,7 @@ def db() -> Database:
     return Database().load(DB_FILEPATH)
 
 
-def test_db_add(db: Database):
+def test_add(db: Database):
     assert db.count() == 2
     item = {
         'randomInteger': 111,
@@ -32,7 +32,7 @@ def test_db_add(db: Database):
     assert found == item
 
 
-def test_db_add_many(db: Database):
+def test_add_many(db: Database):
     assert db.count() == 2
     item_1 = {
         'randomInteger': 111,
@@ -49,7 +49,7 @@ def test_db_add_many(db: Database):
     assert db.get(new_ids[1]) == item_2
 
 
-def test_db_remove(db: Database):
+def test_remove(db: Database):
     assert db.count() == 2
 
     try:
@@ -68,7 +68,7 @@ def test_db_remove(db: Database):
         pass
 
 
-def test_db_remove_single_list(db: Database):
+def test_remove_single_list(db: Database):
     assert db.count() == 2
     target = db.get(REC_ID)
     removed = db.remove([REC_ID])
@@ -77,7 +77,7 @@ def test_db_remove_single_list(db: Database):
     assert removed[0] == target
 
 
-def test_db_remove_many(db: Database):
+def test_remove_many(db: Database):
     assert db.count() == 2
     target_1 = db.get(REC_ID)
     target_2 = db.get(REC_ID_2)
@@ -88,18 +88,18 @@ def test_db_remove_many(db: Database):
     assert removed[1] == target_2
 
 
-def test_db_get_by_id(db: Database):
+def test_get_by_id(db: Database):
     found = db.get(REC_ID)
     assert found['randomInteger'] == 123
 
 
-def test_db_get_by_ids(db: Database):
+def test_get_by_ids(db: Database):
     found = db.get([REC_ID, REC_ID_2])
     assert found[0]['randomInteger'] == 123
     assert found[1]['randomInteger'] == 321
 
 
-def test_db_modify_by_id(db: Database):
+def test_modify_by_id(db: Database):
     target = {
         'newString': 'demian',
     }
@@ -107,7 +107,7 @@ def test_db_modify_by_id(db: Database):
     assert db.get(REC_ID) == target
 
 
-def test_db_modify_by_ids(db: Database):
+def test_modify_by_ids(db: Database):
     keys = [REC_ID, REC_ID_2]
     values = [
         {
@@ -124,7 +124,7 @@ def test_db_modify_by_ids(db: Database):
     assert db.get(keys[1]) == values[1]
 
 
-def test_db_modify_wrong_params(db: Database):
+def test_modify_wrong_params(db: Database):
     try:
         # 1 key, 2 values
         db.modify(REC_ID, [{}, {}])
@@ -136,7 +136,7 @@ def test_db_modify_wrong_params(db: Database):
         pass
 
 
-def test_db_all(db: Database):
+def test_all(db: Database):
     items = db.all()
     logger.debug(items)
     assert len(items) == 2
@@ -145,19 +145,19 @@ def test_db_all(db: Database):
     assert expected == cat_names
 
 
-def test_db_clear(db: Database):
+def test_clear(db: Database):
     assert db.count() == 2
     db.clear()
     assert db.count() == 0
 
 
-def test_db_has(db: Database):
+def test_has(db: Database):
     assert db.has(REC_ID) == True
     assert db.has(REC_ID_2) == True
     assert db.has(REC_ID_NOT_EXIST) == False
 
 
-def test_db_has_many(db: Database):
+def test_has_many(db: Database):
     assert db.has([REC_ID, REC_ID_2]) == [True, True]
     assert db.has([REC_ID, REC_ID_NOT_EXIST]) == [True, False]
     assert db.has([REC_ID_NOT_EXIST, REC_ID_2]) == [False, True]
@@ -166,18 +166,18 @@ def test_db_has_many(db: Database):
         assert type(has) is bool
 
 
-def test_db_count(db: Database):
+def test_count(db: Database):
     assert db.count() == 2
 
 
-def test_db_drop(db: Database):
+def test_drop(db: Database):
     dropped_count = db.drop()
     assert dropped_count == 2
     dropped_count = db.drop()
     assert dropped_count == 0
 
 
-def test_db_commit_and_rollback(db: Database):
+def test_commit_and_rollback(db: Database):
     prev = db.all()
     assert len(prev) == 2
 

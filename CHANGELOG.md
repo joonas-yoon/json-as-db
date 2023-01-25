@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Supports to find by key and value with `Condition` that is generated from `Key`.
+- Supports to find by key and value with `Condition` that is generated from `Key`. [(#8)](https://github.com/joonas-yoon/json-as-db/issues/8)
+- Implements useful representation for quickly displaying as a table format. [(#4)](https://github.com/joonas-yoon/json-as-db/issues/4)
+- Add static method to load - `json_as_db.load(path)` [(#7)](https://github.com/joonas-yoon/json-as-db/issues/7)
+- Add a variable `__version__` in global.
+
+### Fixed
+
+- Implements `items()` methods to override dictionary on `Database` class. [(#3)](https://github.com/joonas-yoon/json-as-db/issues/3)
+- Getter supports list-like parameter such as `db[['id1', 'id2']]` [(#5)](https://github.com/joonas-yoon/json-as-db/issues/5)
 
 Thanks for getting this release out! please stay tuned :)
 
