@@ -6,7 +6,7 @@ import shortuuid
 from datetime import datetime
 from typing import Any, Union, List, Callable
 
-from ..constants import package_name
+from ..constants import package_name, __version__
 from .._utils import override_dict, from_maybe_list, return_maybe, decorater
 from ._formatting import stringify
 
@@ -17,7 +17,6 @@ __all__ = [
 
 class Database(dict):
     __data__ = 'data'
-    __version__ = '1.0.0'
     __metadata__ = [
         'version',
         'creator',
@@ -35,7 +34,7 @@ class Database(dict):
     def _create_empty(self) -> dict:
         now = datetime.now().isoformat()
         return {
-            'version': self.__version__,
+            'version': __version__,
             'creator': package_name,
             'created_at': now,
             'updated_at': now,
@@ -85,6 +84,10 @@ class Database(dict):
 
     def values(self) -> list:
         return self.data.values()
+
+    @property
+    def version(self) -> str:
+        return self.__dict__.get('version')
 
     @property
     def data(self) -> dict:

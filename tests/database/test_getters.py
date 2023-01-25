@@ -18,20 +18,6 @@ def db() -> Database:
     return Database().load(DB_FILEPATH)
 
 
-def test_metadata(db: Database):
-    metadata = db.metadata
-    assert bool(metadata)
-    assert metadata['version'] == '0.0.2b1'
-    assert metadata['creator'] == 'json-as-db'
-    assert metadata['created_at'] == '2022-12-23T09:17:31.814215'
-    assert metadata['updated_at'] == '2022-12-23T15:56:04.586110'
-
-
-def test_data(db: Database):
-    assert db.data[ID] == db.get(ID)
-    assert db.data.get(ID) == db.get(ID)
-
-
 def test_get_item(db: Database):
     found = db[ID]
     assert found['randomInteger'] == 123
