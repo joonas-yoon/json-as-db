@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Thanks for getting this release out! please stay tuned :)
+
+## [0.2.4]
+
 ### Added
 
 - Supports to find by key and value with `Condition` that is generated from `Key`. [(#8)](https://github.com/joonas-yoon/json-as-db/issues/8)
@@ -18,8 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implements `items()` methods to override dictionary on `Database` class. [(#3)](https://github.com/joonas-yoon/json-as-db/issues/3)
 - Getter supports list-like parameter such as `db[['id1', 'id2']]` [(#5)](https://github.com/joonas-yoon/json-as-db/issues/5)
-
-Thanks for getting this release out! please stay tuned :)
 
 ## [0.2.3] - 2023-01-18
 
@@ -66,6 +68,8 @@ Also this is not stable, so under alpha-test.
 - Organized direcotries
 
 [Unreleased]: https://github.com/joonas-yoon/json-as-db/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.1...v0.2.0
+[0.2.4]: https://github.com/joonas-yoon/json-as-db/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/joonas-yoon/json-as-db/compare/v0.2.0...v0.2.3
+[0.2.2]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/joonas-yoon/json-as-db/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/joonas-yoon/json-as-db/releases/tag/v0.1.0
