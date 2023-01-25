@@ -8,6 +8,7 @@ from typing import Any, Union, List, Callable
 
 from ..constants import package_name
 from .._utils import override_dict, from_maybe_list, return_maybe
+from ._formatting import stringify
 
 __all__ = [
     'Database'
@@ -69,7 +70,7 @@ class Database(dict):
         return out
 
     def __repr__(self):
-        return self.__exports_only_publics().__repr__()
+        return stringify(list(self.data.values()))
 
     def __str__(self):
         return str(self.__repr__())
