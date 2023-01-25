@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from utils import file, logger
+from utils import file, logger, fail
 
 from json_as_db import Database
 
@@ -40,14 +40,14 @@ def test_setter(db: Database):
     except NotImplementedError:
         pass
     except:
-        assert False
+        fail()
 
 
 def test_del(db: Database):
     try:
         del db[REC_ID]
     except:
-        assert False
+        fail()
     assert db[REC_ID] is None
 
 
@@ -89,7 +89,7 @@ def test_constructor():
     try:
         db = Database(extenral_dict)
     except:
-        assert False
+        fail()
 
 
 def test_deconstructor():
@@ -97,4 +97,4 @@ def test_deconstructor():
     try:
         del db
     except:
-        assert False
+        fail()
