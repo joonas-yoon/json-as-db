@@ -83,6 +83,9 @@ class Database(dict):
     def keys(self) -> list:
         return self.data.keys()
 
+    def items(self) -> list:
+        return self.data.items()
+
     def values(self) -> list:
         return self.data.values()
 
