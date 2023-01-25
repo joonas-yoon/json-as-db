@@ -4,19 +4,29 @@
 
 Using JSON as very lightweight database
 
+## Overview
+
 ```python
->>> db = Database()
->>> db.load('output.json')   # Load database from file
->>> db.add([{                # Add items what you want to add
-...   "id": "1002",
-...   "type": "Chocolate"
-... })
-['FqkmbYFSCRCAHQWydhM69v', 'RUJGcVBFANvNRReXa8U3En']
->>> db.save('output.json', json_kwds={'indent': 4})   # Just save it into file.
+import json_as_db as jad
+
+db = jad.Database()      # Declare an instance
+db.load('output.json')   # Load database from file (optional)
+db.add([{                # Add items what you want to add
+  "id": "1002",
+  "type": "Chocolate"
+})
+# ['FqkmbYFSCRCAHQWydhM69v', 'RUJGcVBFANvNRReXa8U3En']
 ```
 
-```js
-// output.json
+```python
+db[db.find(jad.Key('type') == 'Chocolate')]
+# { "id": "1002", "type": "Chocolate" }
+```
+
+```python
+db.save('output.json', json_kwds={'indent': 4})   # Just save it into file.
+"""
+file: output.json
 {
     "created_at": "2022-12-25T16:50:02.459068",
     "creator": "json_as_db",
@@ -31,8 +41,21 @@ Using JSON as very lightweight database
         }
     },
     "updated_at": "2022-12-28T16:51:36.276790",
-    "version": "1.0.0"
+    "version": "0.2.4"
 }
+"""
+```
+
+```python
+print(db)
+"""
+id    type
+1002  Chocolate
+1001  Regular
+
+
+[2 items, 2 keys]
+"""
 ```
 
 ## Documentation
@@ -53,6 +76,16 @@ Installing via GitHub repository,
 git clone https://github.com/joonas-yoon/json-as-db.git
 pip install -e json-as-db
 ```
+
+## Benchmark
+
+||json_as_db|pandas|
+|:-|-:|-:|
+|_Loads from file_|`149.11810 ms`|`153.71676 ms`|
+|_Appending data_|`8.96103 ms`|`2760.27654 ms`|
+|_Searching items_|`9.87914 ms`|`2.59354 ms`|
+
+Please see the details on [BENCHMARK.md](BENCHMARK).
 
 ## Contributing
 
