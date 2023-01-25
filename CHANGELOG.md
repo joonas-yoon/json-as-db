@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Supports short id that only 6 more letters for every methods such as `db['kcbPuq']`, not like `db['kcbPuqpfV3....'`. [(#6)](https://github.com/joonas-yoon/json-as-db/issues/6)
+
 Thanks for getting this release out! please stay tuned :)
 
 ## [0.2.4]
