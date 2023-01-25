@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Supports to find by key and value with `Condition` that is generated from `Key`. [(#8)](https://github.com/joonas-yoon/json-as-db/issues/3)
 - Implements useful representation for quickly displaying as a table format. [(#4)](https://github.com/joonas-yoon/json-as-db/issues/4)
+- Add static method to load - `json_as_db.load(path)` [(#7)](https://github.com/joonas-yoon/json-as-db/issues/7)
 
 ### Fixed
 
