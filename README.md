@@ -85,11 +85,11 @@ pip install -e json-as-db
 |_Appending data_|`8.96103 ms`|`2760.27654 ms`|
 |_Searching items_|`9.87914 ms`|`2.59354 ms`|
 
-Please see the details on [BENCHMARK.md](BENCHMARK).
+Please see the details on [BENCHMARK](BENCHMARK.md).
 
 ## Contributing
 
-Contributing guidelines can be found [CONTRIBUTING.md](CONTRIBUTING).
+Contributing guidelines can be found [CONTRIBUTING](CONTRIBUTING.md).
 
 Welcome all contributions to the community and feel free to contribute.
 
