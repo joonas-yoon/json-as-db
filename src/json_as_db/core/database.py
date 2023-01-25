@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Union, List, Callable
 
 from ..constants import package_name
-from .._utils import override_dict, from_maybe_list, return_maybe
+from .._utils import override_dict, from_maybe_list, return_maybe, decorater
 from ._formatting import stringify
 
 __all__ = [
@@ -69,13 +69,15 @@ class Database(dict):
             out.pop(key)
         return out
 
-    def __repr__(self):
+    @decorater.copy_doc(stringify)
+    def __repr__(self) -> str:
         return stringify(list(self.data.values()))
 
-    def __str__(self):
+    @decorater.copy_doc(stringify)
+    def __str__(self) -> str:
         return str(self.__repr__())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
     def keys(self) -> list:

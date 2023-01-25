@@ -34,6 +34,25 @@ def row_padded(row: list, widths: list) -> List[str]:
 
 
 def stringify(all_items: List[dict]) -> str:
+    """Return 3 each rows from the top and the bottom.
+
+    Returns:
+        str: The first and last 3 rows of the caller object.
+
+    Example:
+        >>> db
+        age  grouped  ...  job                name
+        32   True     ...  Camera operator    Layne
+        17   False    ...  Flying instructor  Somerled
+        9    True     ...  Inventor           Joon-Ho
+        ...  ...      ...  ...                ...
+        23   None     ...  Publican           Melanie
+        54   True     ...  Racing driver      Eike
+        41   None     ...  Barrister          Tanja
+
+
+        [100 items, 9 keys]
+    """
     # Collect key names to be column
     keys = set()
     for item in all_items:
