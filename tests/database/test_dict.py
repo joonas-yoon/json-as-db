@@ -76,7 +76,7 @@ def test_str(db: Database):
     assert str(db) == DB_STR_OUTPUT
 
 
-def test_in(db: Database):
+def test_contains(db: Database):
     """The `in` keyword is used to check if a value is present in a sequence (list, range, string etc.).
     """
     assert True == (REC_ID in db)

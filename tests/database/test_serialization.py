@@ -7,7 +7,7 @@ from utils import file, logger
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def test_db_load():
+def test_load():
     filepath = os.path.join(CUR_DIR, '..', 'samples', 'db.json')
     filepath = os.path.abspath(filepath)
     logger.debug('setup: (file) '+ filepath)
@@ -27,7 +27,7 @@ def test_db_load():
     assert item_expected == item
 
 
-def test_db_load_from_list_json():
+def test_load_from_list_json():
     filepath = os.path.join(CUR_DIR, '..', 'samples', 'list.json')
     filepath = os.path.abspath(filepath)
     logger.debug('setup: (file) '+ filepath)
@@ -53,7 +53,7 @@ def test_db_load_from_list_json():
         assert item2["randomInteger"] == 123
 
 
-def test_db_load_from_json():
+def test_load_from_json():
     filepath = os.path.join(CUR_DIR, '..', 'samples', 'sample1.json')
     filepath = os.path.abspath(filepath)
     logger.debug('setup: (file) '+ filepath)
@@ -70,7 +70,7 @@ def test_db_load_from_json():
     assert len(item['items']) == 2
 
 
-def test_db_save():
+def test_save():
     temp_dir = os.path.relpath(os.path.join(CUR_DIR, 'test_save'))
     try:
         file.remove(temp_dir)
