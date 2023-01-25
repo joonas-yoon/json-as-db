@@ -42,11 +42,8 @@ class Database(dict):
             self.__data__: dict(),
         }
 
-    def __getitem__(self, key: str) -> Any:
-        try:
-            return self.data.__getitem__(key)
-        except KeyError:
-            return None
+    def __getitem__(self, key: Union[str, List[str]]) -> Union[Any, List[Any]]:
+        return self.get(key)
 
     def __setitem__(self, key, value) -> None:
         raise NotImplementedError('Can not set attributes directly')

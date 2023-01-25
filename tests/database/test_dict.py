@@ -33,6 +33,15 @@ def test_getter(db: Database):
     assert type(db[REC_ID_NOT_EXIST]) is type(None)
 
 
+def test_getter_by_list(db: Database):
+    items = db[[REC_ID, REC_ID_2]]
+    logger.debug(items)
+    assert type(items) is list
+    assert len(items) == 2
+    items = db[[REC_ID_NOT_EXIST]]
+    assert items == [None]
+
+
 def test_setter(db: Database):
     assert db[REC_ID]['randomInteger'] == 123
     try:
