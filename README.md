@@ -116,14 +116,15 @@ age  grouped  ...  job                name
 
 ## Benchmark
 
-||json_as_db|pandas|
+|(avg. time per operation with 10K items)|json_as_db|pandas|
 |:-|-:|-:|
 |_Loads from file_|`149.11810 ms`|`153.71676 ms`|
 |_Append items_|`8.96103 ms`|`2760.27654 ms`|
 |_Search a item_|`9.87914 ms`|`2.59354 ms`|
-|_Get item(s) by key_|TBD|TBD|
-|_Updating a item_|TBD|TBD|
-|_Remove item(s)_|TBD|TBD|
+|_Get an item by key_|`0.0039 ms`|`0.0689 ms`|
+|_Updating a item_|`0.0074 ms`|`0.0148 ms`|
+|_Updating 5 items in a row_|`0.0130 ms`|`0.9432 ms`|
+|_Remove an item_|`0.0012 ms`|`6.0930 ms`|
 
 Please see the details on [BENCHMARK](BENCHMARK.md).
 
